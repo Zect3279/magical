@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { Player, PlayerLogoImage } from "textalive-app-api";
+import { Player } from "textalive-app-api";
 
 var endLoad = false
 
