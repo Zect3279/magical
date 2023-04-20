@@ -59,7 +59,7 @@ const sketch = (p: p5) => {
 new p5(sketch)
 
 const player = new Player({
-  app: { token: import.meta.env.TEXTALIVE_TOKEN },
+  app: { token: "xaE5okcYELClyrkD" },
   mediaElement: document.querySelector("#media") as HTMLMediaElement,
 })
 
