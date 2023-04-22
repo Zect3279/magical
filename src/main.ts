@@ -79,11 +79,16 @@ const player = new Player({
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
-      player.createFromSongUrl("https://piapro.jp/t/ucgN/20230110005414", {
+      player.createFromSongUrl(SONG_URL, {
         video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427948/history
+          beatId: 4267297,
+          chordId: 2405019,
+          repetitiveSegmentId: 2405019,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FucgN%2F20230110005414
           lyricId: 56092,
-          lyricDiffId: 9607,
-        }
+          lyricDiffId: 9636
+        },
       })
     }
   },
