@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 *.env*
 
-public/ZenOldMincho-Medium.ttf
+# public/ZenOldMincho-Medium.ttf
