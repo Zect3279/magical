@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { Player } from "textalive-app-api";
+import { Player, Ease } from "textalive-app-api";
 
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
@@ -7,18 +7,16 @@ var chorus_data:any;
 
 const sketch = (p: p5) => {
   let font: p5.Font
+  type CirclePose = {
+    x?: number
+    y?: number
+    life?: number
+  }
+  let objects: Array<CirclePose> = []
 
   p.preload = () => {
     font = p.loadFont("/ZenOldMincho-Medium.ttf")
   }
-
-  // p.mousePressed = () => {
-  //   if (player.video && !player.isPlaying) {
-  //     player.requestMediaSeek(15000)
-  //     player.requestPlay()
-  //     console.log(player.timer.position)
-  //   }
-  // }
 
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL)
@@ -32,6 +30,7 @@ const sketch = (p: p5) => {
     if (endLoad && !player.isPlaying) {
       p.background(50)
       p.textSize(50)
+      p.fill(255)
       p.text(player.data.song.name, 0, -20)
       p.textSize(30)
       p.text(`by ${player.data.song.artist.name}`, 0, 40)
@@ -40,6 +39,7 @@ const sketch = (p: p5) => {
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
+      p.fill(255)
       const position = player.timer.position
       p.text(position, 0, 70)
       for (const phrase of player.video.phrases) {
@@ -66,6 +66,26 @@ const sketch = (p: p5) => {
         }
       }
     }
+
+    // クリック場所に円
+    objects.forEach((object) => {
+      let alpha = p.map(object.life, 0, 500, 0, 255);
+      p.fill(255, alpha);
+      p.noStroke();
+      p.circle(object.x, object.y, 20);
+      object.life -= p.deltaTime;
+    });
+
+    objects = objects.filter((object) => object.life > 0);
+  }
+
+  p.mousePressed = () => {
+    if (!(player.isPlaying && chorus_data)) {
+      return
+    }
+    console.log("click")
+    objects.push({ x: p.mouseX - p.width / 2, y: p.mouseY - p.height / 2, life: 500 })
+    // console.log(objects)
   }
 }
 
@@ -99,14 +119,17 @@ player.addListener({
     endLoad = true
     // https://widget.songle.jp/api/v1/song/chorus.json?url=https://piapro.jp/t/ucgN/20230110005414
     const url = "https://widget.songle.jp/api/v1/song/chorus.json?url=" + SONG_URL
+    console.log(url)
     fetch(url)
       .then(response => response.json())
       .then(data => chorus_data = data)
     // console.log(chorus_data)
-    document.addEventListener('click', function(event) {
-      player.requestPlay()
-      console.log(player.timer.position)
-      console.log(player.timer)
-    });
+    function clickHandler(event: MouseEvent) {
+      player.requestPlay();
+      console.log(player.timer.position);
+      console.log(player.timer);
+      document.removeEventListener('click', clickHandler);
+    }
+    document.addEventListener('click', clickHandler);
   },
 })
