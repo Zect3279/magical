@@ -65,6 +65,19 @@ const sketch = (p: p5) => {
           }
         }
       }
+
+      // ノーツ: ビートに合わせて
+      const beat = player.findBeat(position)
+      if (beat) {
+        const progress = beat.progress(position)
+        // console.log(progress)
+        const z = p.map(progress, 0, 1, -1000, 250)
+        const y = p.map(progress, 0, 1, 0, 200)
+        p.push()
+        p.translate(0, y, z)
+        p.ellipse(0, 0, 30, 30)
+        p.pop()
+      }
     }
 
     // クリック場所に円
