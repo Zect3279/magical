@@ -54,14 +54,17 @@ const sketch = (p: p5) => {
             p.text(word.text, 0, -70)
           }
         }
+        if (phrase.startTime <= position && position < phrase.endTime) {
+          p.text(phrase.text, 0, -140)
+        }
       }
       for (const s of chorus_data["repeatSegments"]) {
         for (const r of s["repeats"]) {
           if (r["start"] <= position && position < (r["start"] + r["duration"])) {
             if (s["isChorus"]) {
-              p.text("サビ", 0, -160)
+              p.text("サビ", 0, -230)
             } else {
-              p.text(`${s["index"]}-${r["index"]}`, 0, -160)
+              p.text(`${s["index"]}-${r["index"]}`, 0, -230)
             }
           }
         }
@@ -79,11 +82,30 @@ const sketch = (p: p5) => {
       //   p.ellipse(0, 0, 30, 30)
       //   p.pop()
       // }
+
       for (const b of player.getBeats()) {
         if (b.startTime <= position && position < b.endTime) {
-          p.text(b.index, 0, -250)
+          p.text(b.index, 0, -320)
         }
       }
+
+      // for (const beat of player.getBeats()) {
+      //   p.fill(255)
+      //   p.circle(
+      //     0,
+      //     p.map(
+      //       beat.startTime,
+      //       position - 500,
+      //       position + 500,
+      //       p.height / 2,
+      //       -p.height / 2
+      //     ),
+      //     50
+      //   )
+      //   p.noFill()
+      //   p.stroke(255)
+      //   p.circle(0, 0, 60)
+      // }
     }
 
     // クリック場所に円
@@ -150,6 +172,5 @@ player.addListener({
       document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
-    console.log(player.getBeats())
   },
 })
