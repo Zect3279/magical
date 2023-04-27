@@ -1,19 +1,26 @@
 import p5 from 'p5'
 import { Player, Ease } from "textalive-app-api";
 
+type CirclePose = {
+  x: number
+  y: number
+  life: number
+}
+type NotesObj = {
+  startTime: number
+  endTime: number
+  z: number
+  xType: number
+}
+
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 
 const sketch = (p: p5) => {
   let font: p5.Font
-  type CirclePose = {
-    x?: number
-    y?: number
-    life?: number
-  }
   let objects: Array<CirclePose> = []
-  let notes: Array<any> = []
+  let notes: Array<NotesObj> = []
 
   p.preload = () => {
     font = p.loadFont("/ZenOldMincho-Medium.ttf")
