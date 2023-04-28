@@ -16,11 +16,12 @@ type NotesObj = {
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
+const NOTES_DURATION = 500;
+let notes: Array<NotesObj> = []
 
 const sketch = (p: p5) => {
   let font: p5.Font
   let objects: Array<CirclePose> = []
-  let notes: Array<NotesObj> = []
 
   p.preload = () => {
     font = p.loadFont("/ZenOldMincho-Medium.ttf")
@@ -44,6 +45,14 @@ const sketch = (p: p5) => {
       p.text(`by ${player.data.song.artist.name}`, 0, 40)
       p.textSize(20)
       p.text("画面をクリックして開始", 0, 120)
+
+      p.push()
+      p.translate(0, 200, 250)
+      p.ellipse(0, 0, 30, 30)
+      p.pop()
+      p.stroke(255);
+      p.strokeWeight(1);
+      p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
@@ -78,14 +87,33 @@ const sketch = (p: p5) => {
       }
 
       // ノーツ: ビートに合わせて
+      // zが-1000->250=1250
+      // NOTES_DURATIONが500ms
+      // 1250/500 <-フレーム毎のz軸変化
+      const Z_INCREMENT = 1250/NOTES_DURATION
+      notes.forEach((n) => {
+        if (n.endTime-NOTES_DURATION <= position) {
+          p.push()
+          p.translate(0, 200, n.z)
+          p.ellipse(0, 0, 30, 30)
+          p.pop()
+          n.z += p.deltaTime*Z_INCREMENT
+        }
+      })
+      p.stroke(255);
+      p.strokeWeight(1);
+      p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
+
+      notes = notes.filter((object) => object.z < p.windowHeight);
+
       // const beat = player.findBeat(position)
       // if (beat) {
       //   const progress = beat.progress(position)
       //   // console.log(progress)
       //   const z = p.map(progress, 0, 1, -1000, 250)
-      //   const y = p.map(progress, 0, 1, 0, 200)
+      //   // const y = p.map(progress, 0, 1, 0, 200)
       //   p.push()
-      //   p.translate(0, y, z)
+      //   p.translate(0, 200, z)
       //   p.ellipse(0, 0, 30, 30)
       //   p.pop()
       // }
@@ -179,5 +207,15 @@ player.addListener({
       document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
+
+    // ビートに合わせたノート作成
+    for (const b of player.getBeats()) {
+      notes.push({
+        "startTime": b.startTime,
+        "endTime": b.endTime,
+        "z": -1000,
+        "xType": 0,
+      })
+    }
   },
 })
