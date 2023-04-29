@@ -106,41 +106,12 @@ const sketch = (p: p5) => {
 
       notes = notes.filter((object) => object.z < p.windowHeight);
 
-      // const beat = player.findBeat(position)
-      // if (beat) {
-      //   const progress = beat.progress(position)
-      //   // console.log(progress)
-      //   const z = p.map(progress, 0, 1, -1000, 250)
-      //   // const y = p.map(progress, 0, 1, 0, 200)
-      //   p.push()
-      //   p.translate(0, 200, z)
-      //   p.ellipse(0, 0, 30, 30)
-      //   p.pop()
-      // }
-
       for (const b of player.getBeats()) {
         if (b.startTime <= position && position < b.endTime) {
           p.text(b.index, 0, -320)
         }
       }
 
-      // for (const beat of player.getBeats()) {
-      //   p.fill(255)
-      //   p.circle(
-      //     0,
-      //     p.map(
-      //       beat.startTime,
-      //       position - 500,
-      //       position + 500,
-      //       p.height / 2,
-      //       -p.height / 2
-      //     ),
-      //     50
-      //   )
-      //   p.noFill()
-      //   p.stroke(255)
-      //   p.circle(0, 0, 60)
-      // }
     }
 
     // クリック場所に円
@@ -160,8 +131,31 @@ const sketch = (p: p5) => {
       return
     }
     console.log("click")
-    objects.push({ x: p.mouseX - p.width / 2, y: p.mouseY - p.height / 2, life: 500 })
-    // console.log(objects)
+    const x = p.mouseX - p.width / 2
+    const y = p.mouseY - p.height / 2
+    const position = player.timer.position
+
+    // クリック場所に目印を付ける
+    objects.push({ x: x, y: y, life: 500 })
+
+    // ノーツ当たり判定処理
+    //   被クリック座標でX軸のtypeを特定
+    //   ノーツzが判定軸の前後15から評価開始
+    // クリックで消滅させる
+    // lifeで削除されるとmiss判定
+    const line_x = 0
+    notes.forEach((n) => {
+      if (!(n.endTime-NOTES_DURATION <= position && 235 <= n.z && n.z <= 265)) {
+        return
+      }
+      if ((235 <= n.z && n.z < 240) || (260 < n.z && n.z <= 265)) {
+        // Good判定
+      } else if ((240 <= n.z && n.z < 245) || (255 < n.z && n.z <= 260)) {
+        // Great判定
+      } else if (245 <= n.z && n.z <= 255) {
+        // Perfect判定
+      }
+    })
   }
 }
 
