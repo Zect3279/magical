@@ -1,12 +1,15 @@
 import p5 from 'p5'
 import { Player, Ease } from "textalive-app-api";
 
+import observe from "./util/utils"
+
 type CirclePose = {
   x: number
   y: number
   life: number
 }
 type NotesObj = {
+  id: number,
   startTime: number
   endTime: number
   z: number
@@ -94,7 +97,7 @@ const sketch = (p: p5) => {
       notes.forEach((n) => {
         if (n.endTime-NOTES_DURATION <= position) {
           p.push()
-          p.translate(0, 200, n.z)
+          p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
           p.ellipse(0, 0, 30, 30)
           p.pop()
           n.z += p.deltaTime*Z_INCREMENT
@@ -130,7 +133,7 @@ const sketch = (p: p5) => {
     if (!(player.isPlaying && chorus_data)) {
       return
     }
-    console.log("click")
+    // console.log("click")
     const x = p.mouseX - p.width / 2
     const y = p.mouseY - p.height / 2
     const position = player.timer.position
@@ -143,17 +146,20 @@ const sketch = (p: p5) => {
     //   ノーツzが判定軸の前後15から評価開始
     // クリックで消滅させる
     // lifeで削除されるとmiss判定
-    const line_x = 0
+    // const line_x = 0
     notes.forEach((n) => {
       if (!(n.endTime-NOTES_DURATION <= position && 235 <= n.z && n.z <= 265)) {
         return
       }
       if ((235 <= n.z && n.z < 240) || (260 < n.z && n.z <= 265)) {
         // Good判定
+        console.log("good")
       } else if ((240 <= n.z && n.z < 245) || (255 < n.z && n.z <= 260)) {
         // Great判定
+        console.log("great")
       } else if (245 <= n.z && n.z <= 255) {
         // Perfect判定
+        console.log("perfect")
       }
     })
   }
@@ -205,6 +211,7 @@ player.addListener({
     // ビートに合わせたノート作成
     for (const b of player.getBeats()) {
       notes.push({
+        "id": Number(new Date().getTime().toString().slice(-7)),
         "startTime": b.startTime,
         "endTime": b.endTime,
         "z": -1000,
