@@ -19,7 +19,7 @@ type NotesObj = {
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
-const NOTES_DURATION = 500;
+const NOTES_DURATION = 2000;
 let notes: Array<NotesObj> = []
 
 const sketch = (p: p5) => {
