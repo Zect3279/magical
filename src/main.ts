@@ -53,6 +53,17 @@ const sketch = (p: p5) => {
       p.translate(0, 200, 250)
       p.ellipse(0, 0, 30, 30)
       p.pop()
+
+      p.push()
+      p.translate(60, 200, 250)
+      p.ellipse(0, 0, 30, 30)
+      p.pop()
+
+      p.push()
+      p.translate(-60, 200, 250)
+      p.ellipse(0, 0, 30, 30)
+      p.pop()
+
       p.stroke(255);
       p.strokeWeight(1);
       p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
@@ -97,7 +108,8 @@ const sketch = (p: p5) => {
       notes.forEach((n) => {
         if (n.endTime-NOTES_DURATION <= position) {
           p.push()
-          p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
+          // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
+          p.translate(0, 200, n.z)
           p.ellipse(0, 0, 30, 30)
           p.pop()
           n.z += p.deltaTime*Z_INCREMENT
@@ -172,6 +184,49 @@ const player = new Player({
   mediaElement: document.querySelector("#media") as HTMLMediaElement,
 })
 
+function createNotesFromBeat() {
+  // ビートに合わせたノート作成
+  for (const b of player.getBeats()) {
+    notes.push({
+      "id": Number(new Date().getTime().toString().slice(-7)),
+      "startTime": b.startTime,
+      "endTime": b.endTime,
+      "z": -1000,
+      "xType": 0,
+    })
+  }
+}
+
+function createNotesFromPhrase() {
+  for (const phrase of player.video.phrases) {
+    for (const word of phrase.children) {
+      notes.push({
+        "id": Number(new Date().getTime().toString().slice(-7)),
+        "startTime": word.previous?.endTime,
+        "endTime": word.startTime,
+        "z": -1000,
+        "xType": 0,
+      })
+    }
+  }
+}
+
+function createNotesFromWord() {
+  for (const phrase of player.video.phrases) {
+    for (const word of phrase.children) {
+      for (const char of word.children) {
+        notes.push({
+          "id": Number(new Date().getTime().toString().slice(-7)),
+          "startTime": char.previous?.endTime,
+          "endTime": char.startTime,
+          "z": -1000,
+          "xType": 0,
+        })
+      }
+    }
+  }
+}
+
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
@@ -191,6 +246,7 @@ player.addListener({
   onTimerReady() {
     // ↓サビ飛ばし
     player.requestMediaSeek(35000)
+    // player.requestMediaSeek(239540)
     console.log(player.data.song)
     endLoad = true
     // https://widget.songle.jp/api/v1/song/chorus.json?url=https://piapro.jp/t/ucgN/20230110005414
@@ -201,22 +257,28 @@ player.addListener({
       .then(data => chorus_data = data)
     // console.log(chorus_data)
     function clickHandler(event: MouseEvent) {
+      if (player.isPlaying) {
+        return
+      }
+      // createNotesFromBeat();
+      createNotesFromPhrase();
+      // createNotesFromWord();
+
       player.requestPlay();
       console.log(player.timer.position);
       console.log(player.timer);
-      document.removeEventListener('click', clickHandler);
+      // document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
 
-    // ビートに合わせたノート作成
-    for (const b of player.getBeats()) {
-      notes.push({
-        "id": Number(new Date().getTime().toString().slice(-7)),
-        "startTime": b.startTime,
-        "endTime": b.endTime,
-        "z": -1000,
-        "xType": 0,
-      })
-    }
+    // createNotesFromBeat();
+    createNotesFromPhrase();
+    // createNotesFromWord();
+  },
+  onDispose() {
+      console.log("end from dispose")
+  },
+  onStop() {
+      console.log("end from stop")
   },
 })
