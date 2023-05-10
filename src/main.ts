@@ -227,6 +227,33 @@ function createNotesFromWord() {
   }
 }
 
+function createNotesFromLylic() {
+  console.log(player.getBeats()[0].duration *2)
+  for (const phrase of player.video.phrases) {
+    for (const word of phrase.children) {
+      if (word.duration >= player.getBeats()[0].duration *2) {
+        for (const char of word.children) {
+          notes.push({
+            "id": Number(new Date().getTime().toString().slice(-7)),
+            "startTime": char.previous?.endTime,
+            "endTime": char.startTime,
+            "z": -1000,
+            "xType": 0,
+          })
+        }
+      } else {
+        notes.push({
+          "id": Number(new Date().getTime().toString().slice(-7)),
+          "startTime": word.previous?.endTime,
+          "endTime": word.startTime,
+          "z": -1000,
+          "xType": 0,
+        })
+      }
+    }
+  }
+}
+
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
@@ -261,8 +288,9 @@ player.addListener({
         return
       }
       // createNotesFromBeat();
-      createNotesFromPhrase();
+      // createNotesFromPhrase();
       // createNotesFromWord();
+      createNotesFromLylic();
 
       player.requestPlay();
       console.log(player.timer.position);
@@ -271,9 +299,10 @@ player.addListener({
     }
     document.addEventListener('click', clickHandler);
 
-    // createNotesFromBeat();
-    createNotesFromPhrase();
-    // createNotesFromWord();
+      // createNotesFromBeat();
+      // createNotesFromPhrase();
+      // createNotesFromWord();
+      createNotesFromLylic();
   },
   onDispose() {
       console.log("end from dispose")
