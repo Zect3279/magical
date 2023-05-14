@@ -109,7 +109,17 @@ const sketch = (p: p5) => {
         if (n.endTime-NOTES_DURATION <= position) {
           p.push()
           // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
-          p.translate(0, 200, n.z)
+          switch (n.xType) {
+            case 0:
+              p.translate(0, 200, n.z)
+              break;
+            case 1:
+              p.translate(60, 200, n.z)
+              break;
+
+            default:
+              break;
+          }
           p.ellipse(0, 0, 30, 30)
           p.pop()
           n.z += p.deltaTime*Z_INCREMENT
@@ -192,7 +202,7 @@ function createNotesFromBeat() {
       "startTime": b.startTime,
       "endTime": b.endTime,
       "z": -1000,
-      "xType": 0,
+      "xType": 1,
     })
   }
 }
@@ -287,14 +297,12 @@ player.addListener({
       if (player.isPlaying) {
         return
       }
-      // createNotesFromBeat();
+      createNotesFromBeat();
       // createNotesFromPhrase();
       // createNotesFromWord();
       createNotesFromLylic();
 
       player.requestPlay();
-      console.log(player.timer.position);
-      console.log(player.timer);
       // document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
