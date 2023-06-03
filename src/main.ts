@@ -12,8 +12,10 @@ type NotesObj = {
   id: number,
   startTime: number
   endTime: number
+  ppos: number
   z: number
   xType: number
+  color?: string
 }
 
 var endLoad = false
@@ -105,8 +107,8 @@ const sketch = (p: p5) => {
       // NOTES_DURATIONが500ms
       // 1250/500 <-フレーム毎のz軸変化
       const Z_INCREMENT = 1250/NOTES_DURATION
-      notes.forEach((n) => {
-        if (n.endTime-NOTES_DURATION <= position) {
+      notes.forEach((n: NotesObj) => {
+        if (n.ppos-NOTES_DURATION <= position) {
           p.push()
           // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
           switch (n.xType) {
@@ -115,6 +117,8 @@ const sketch = (p: p5) => {
               break;
             case 1:
               p.translate(60, 200, n.z)
+              // p.translate(0, 200, n.z)
+              p.fill(255,0,0)
               break;
 
             default:
@@ -173,15 +177,19 @@ const sketch = (p: p5) => {
       if (!(n.endTime-NOTES_DURATION <= position && 235 <= n.z && n.z <= 265)) {
         return
       }
+      //TODO Miss判定 Bad判定
       if ((235 <= n.z && n.z < 240) || (260 < n.z && n.z <= 265)) {
         // Good判定
         console.log("good")
+        n.color="green"
       } else if ((240 <= n.z && n.z < 245) || (255 < n.z && n.z <= 260)) {
         // Great判定
         console.log("great")
+        n.color="blue"
       } else if (245 <= n.z && n.z <= 255) {
         // Perfect判定
         console.log("perfect")
+        n.color="rainbow"
       }
     })
   }
@@ -201,6 +209,7 @@ function createNotesFromBeat() {
       "id": Number(new Date().getTime().toString().slice(-7)),
       "startTime": b.startTime,
       "endTime": b.endTime,
+      "ppos": b.startTime,
       "z": -1000,
       "xType": 1,
     })
@@ -214,6 +223,7 @@ function createNotesFromPhrase() {
         "id": Number(new Date().getTime().toString().slice(-7)),
         "startTime": word.previous?.endTime,
         "endTime": word.startTime,
+        "ppos": word.startTime,
         "z": -1000,
         "xType": 0,
       })
@@ -229,6 +239,7 @@ function createNotesFromWord() {
           "id": Number(new Date().getTime().toString().slice(-7)),
           "startTime": char.previous?.endTime,
           "endTime": char.startTime,
+          "ppos": char.startTime,
           "z": -1000,
           "xType": 0,
         })
@@ -237,25 +248,59 @@ function createNotesFromWord() {
   }
 }
 
+// クオンタイズ：
+//   歌詞のタイミングをビートでクオンタイズ
+//   upper: ビート
+//   input: 歌詞
+function quantizeValue(upperValues: number[], lowerValue: number): number {
+  let quantizedValue = lowerValue;
+  let j = 0;
+
+  while (quantizedValue > upperValues[j]) {
+    j++;
+  }
+
+  if (j > 0) {
+    const diff1 = quantizedValue - upperValues[j - 1];
+    const diff2 = upperValues[j] - quantizedValue;
+
+    quantizedValue = diff1 < diff2 ? upperValues[j - 1] : upperValues[j];
+  } else {
+    quantizedValue = upperValues[j];
+  }
+
+  return quantizedValue;
+}
+
 function createNotesFromLylic() {
   console.log(player.getBeats()[0].duration *2)
+
+  const upperValues: number[] = []
+  for (const b of player.getBeats()) {
+    upperValues.push(b.startTime)
+  }
+
   for (const phrase of player.video.phrases) {
     for (const word of phrase.children) {
       if (word.duration >= player.getBeats()[0].duration *2) {
         for (const char of word.children) {
+          const startTime = quantizeValue(upperValues, char.startTime)
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "startTime": char.previous?.endTime,
             "endTime": char.startTime,
+            "ppos": startTime,
             "z": -1000,
             "xType": 0,
           })
         }
       } else {
+        const startTime = quantizeValue(upperValues, word.startTime)
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
           "startTime": word.previous?.endTime,
           "endTime": word.startTime,
+          "ppos": startTime,
           "z": -1000,
           "xType": 0,
         })
