@@ -272,19 +272,37 @@ function quantizeValue(upperValues: number[], lowerValue: number): number {
   return quantizedValue;
 }
 
+function divideList(list: number[]) {
+  let output = [];
+  for (let i = 0; i < list.length; i++) {
+    output.push(
+      list[i],
+      // 3 * list[i] / 4 + list[i+1] / 4,
+      (list[i] + list[i+1]) / 2,
+      // list[i] / 4 + 3 * list[i+1] / 4
+      );
+    output.push()
+  }
+  return output;
+}
+
 function createNotesFromLylic() {
   console.log(player.getBeats()[0].duration *2)
 
-  const upperValues: number[] = []
+  const quaValues: number[] = []
   for (const b of player.getBeats()) {
-    upperValues.push(b.startTime)
+    quaValues.push(b.startTime)
   }
+  console.log(quaValues.slice(0,5))
+  const upperValues = divideList(quaValues);
+  console.log(upperValues.slice(0,20))
 
   for (const phrase of player.video.phrases) {
     for (const word of phrase.children) {
       if (word.duration >= player.getBeats()[0].duration *2) {
         for (const char of word.children) {
           const startTime = quantizeValue(upperValues, char.startTime)
+          // const startTime = char.startTime
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "startTime": char.previous?.endTime,
@@ -296,6 +314,7 @@ function createNotesFromLylic() {
         }
       } else {
         const startTime = quantizeValue(upperValues, word.startTime)
+        // const startTime = word.startTime
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
           "startTime": word.previous?.endTime,
