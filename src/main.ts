@@ -23,6 +23,8 @@ const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 const NOTES_DURATION = 2000;
 let notes: Array<NotesObj> = []
+const noteSpeed = 1
+const noteSize = 25
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -75,44 +77,43 @@ const sketch = (p: p5) => {
       p.textSize(50)
       p.fill(255)
       const position = player.timer.position
-      p.text(position, 0, 70)
-      for (const phrase of player.video.phrases) {
-        for (const word of phrase.children) {
-          for (const char of word.children) {
-            if (char.startTime <= position && position < char.endTime) {
-              p.text(char.text, 0, 0)
-            }
-          }
-          if (word.startTime <= position && position < word.endTime) {
-            p.text(word.text, 0, -70)
-          }
-        }
-        if (phrase.startTime <= position && position < phrase.endTime) {
-          p.text(phrase.text, 0, -140)
-        }
-      }
-      for (const s of chorus_data["repeatSegments"]) {
-        for (const r of s["repeats"]) {
-          if (r["start"] <= position && position < (r["start"] + r["duration"])) {
-            if (s["isChorus"]) {
-              p.text("サビ", 0, -230)
-            } else {
-              p.text(`${s["index"]}-${r["index"]}`, 0, -230)
-            }
-          }
-        }
-      }
+      // p.text(position, 0, 70)
+      // for (const phrase of player.video.phrases) {
+      //   for (const word of phrase.children) {
+      //     for (const char of word.children) {
+      //       if (char.startTime <= position && position < char.endTime) {
+      //         p.text(char.text, 0, 0)
+      //       }
+      //     }
+      //     if (word.startTime <= position && position < word.endTime) {
+      //       p.text(word.text, 0, -70)
+      //     }
+      //   }
+      //   if (phrase.startTime <= position && position < phrase.endTime) {
+      //     p.text(phrase.text, 0, -140)
+      //   }
+      // }
+      // for (const s of chorus_data["repeatSegments"]) {
+      //   for (const r of s["repeats"]) {
+      //     if (r["start"] <= position && position < (r["start"] + r["duration"])) {
+      //       if (s["isChorus"]) {
+      //         p.text("サビ", 0, -230)
+      //       } else {
+      //         p.text(`${s["index"]}-${r["index"]}`, 0, -230)
+      //       }
+      //     }
+      //   }
+      // }
 
       // const position = player.timer.position
-      const noteSpeed = 0.5
-      const noteSize = 25
+      p.push()
 
       const posX = (i: number) => p.map(i, 0, 7, -p.width / 6, p.width / 6)
 
       p.rotateX(60)
-      p.translate(0, p.height / 4, 0)
+      p.translate(0, (p.height / 4)+100, 0)
       p.stroke(255)
-      p.line(-p.width / 2, 100, p.width / 2, 100)
+      p.line(-p.width / 2, 0, p.width / 2, 0)
 
       for (let i = 0; i <= 8; i++) {
         p.line(posX(i - 0.5), -p.height * 2, posX(i - 0.5), p.height)
@@ -128,10 +129,13 @@ const sketch = (p: p5) => {
       notes.forEach((n: NotesObj) => {
         p.randomSeed(n.ppos)
         const posY = -n.ppos * noteSpeed
+        // console.log(posY)
         p.circle(posX(n.xType), posY, noteSize)
       })
 
-      notes = notes.filter((object) => object.z < p.windowHeight);
+      notes = notes.filter((object) => (position * noteSpeed)-(object.ppos * noteSpeed) <= 100);
+
+      p.pop()
 
       for (const b of player.getBeats()) {
         if (b.startTime <= position && position < b.endTime) {
@@ -171,20 +175,23 @@ const sketch = (p: p5) => {
     // クリックで消滅させる
     // lifeで削除されるとmiss判定
     // const line_x = 0
+    // console.log(position * noteSpeed)
     notes.forEach((n) => {
-      if (!(n.endTime-NOTES_DURATION <= position && 235 <= n.z && n.z <= 265)) {
+      const posY = (position * noteSpeed)-(n.ppos * noteSpeed)
+      // console.log(((position * noteSpeed)-(n.ppos * noteSpeed)))
+      if (!(-50 <= posY && posY <= 50)) {
         return
       }
       //TODO Miss判定 Bad判定
-      if ((235 <= n.z && n.z < 240) || (260 < n.z && n.z <= 265)) {
+      if ((-50 <= posY && posY < -30) || (30 < posY && posY <= 50)) {
         // Good判定
         console.log("good")
         n.color="green"
-      } else if ((240 <= n.z && n.z < 245) || (255 < n.z && n.z <= 260)) {
+      } else if ((-30 <= posY && posY < 10) || (10 < posY && posY <= 30)) {
         // Great判定
         console.log("great")
         n.color="blue"
-      } else if (245 <= n.z && n.z <= 255) {
+      } else if (-10 <= posY && posY <= 10) {
         // Perfect判定
         console.log("perfect")
         n.color="rainbow"
@@ -286,7 +293,19 @@ function createNotesFromLylic() {
     }
   }
 }
-
+function createNotesFromBeat() {
+  // ビートに合わせたノート作成
+  for (const b of player.getBeats()) {
+    notes.push({
+      "id": Number(new Date().getTime().toString().slice(-7)),
+      "startTime": b.startTime,
+      "endTime": b.endTime,
+      "ppos": b.startTime,
+      "z": -1000,
+      "xType": getRandomLylicX(b.startTime),
+    })
+  }
+}
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
@@ -329,7 +348,7 @@ player.addListener({
       // document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
-
+      notes = []
       // createNotesFromBeat();
       // createNotesFromPhrase();
       // createNotesFromWord();
