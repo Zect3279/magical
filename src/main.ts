@@ -119,50 +119,25 @@ const sketch = (p: p5) => {
       }
 
       p.translate(0, position * noteSpeed, 0)
-      for (const beat of player.getBeats()) {
-        p.randomSeed(beat.startTime)
-        const posY = -beat.startTime * noteSpeed
-        p.circle(posX(p.floor(p.random(8))), posY, noteSize)
-      }
-
-      // // ノーツ: ビートに合わせて
-      // // zが-1000->250=1250
-      // // NOTES_DURATIONが500ms
-      // // 1250/500 <-フレーム毎のz軸変化
-      // const Z_INCREMENT = 1250/NOTES_DURATION
-      // notes.forEach((n: NotesObj) => {
-      //   if (n.ppos-NOTES_DURATION <= position && position < n.ppos) {
-      //     p.push()
-      //     // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
-      //     switch (n.xType) {
-      //       case 0:
-      //         p.translate(0, 200, n.z)
-      //         break;
-      //       case 1:
-      //         p.translate(60, 200, n.z)
-      //         // p.translate(0, 200, n.z)
-      //         p.fill(255,0,0)
-      //         break;
-
-      //       default:
-      //         break;
-      //     }
-      //     p.ellipse(0, 0, 30, 30)
-      //     p.pop()
-      //     n.z += p.deltaTime*Z_INCREMENT
-      //   }
-      // })
-      // p.stroke(255);
-      // p.strokeWeight(1);
-      // p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
-
-      // notes = notes.filter((object) => object.z < p.windowHeight);
-
-      // for (const b of player.getBeats()) {
-      //   if (b.startTime <= position && position < b.endTime) {
-      //     p.text(b.index, 0, -320)
-      //   }
+      // for (const beat of player.getBeats()) {
+      //   p.randomSeed(beat.startTime)
+      //   const posY = -beat.startTime * noteSpeed
+      //   p.circle(posX(p.floor(p.random(8))), posY, noteSize)
       // }
+
+      notes.forEach((n: NotesObj) => {
+        p.randomSeed(n.ppos)
+        const posY = -n.ppos * noteSpeed
+        p.circle(posX(n.xType), posY, noteSize)
+      })
+
+      notes = notes.filter((object) => object.z < p.windowHeight);
+
+      for (const b of player.getBeats()) {
+        if (b.startTime <= position && position < b.endTime) {
+          p.text(b.index, 0, -320)
+        }
+      }
 
     }
 
@@ -225,50 +200,11 @@ const player = new Player({
   mediaElement: document.querySelector("#media") as HTMLMediaElement,
 })
 
-function createNotesFromBeat() {
-  // ビートに合わせたノート作成
-  for (const b of player.getBeats()) {
-    notes.push({
-      "id": Number(new Date().getTime().toString().slice(-7)),
-      "startTime": b.startTime,
-      "endTime": b.endTime,
-      "ppos": b.startTime,
-      "z": -1000,
-      "xType": 1,
-    })
-  }
-}
-
-function createNotesFromPhrase() {
-  for (const phrase of player.video.phrases) {
-    for (const word of phrase.children) {
-      notes.push({
-        "id": Number(new Date().getTime().toString().slice(-7)),
-        "startTime": word.previous?.endTime,
-        "endTime": word.startTime,
-        "ppos": word.startTime,
-        "z": -1000,
-        "xType": 0,
-      })
-    }
-  }
-}
-
-function createNotesFromWord() {
-  for (const phrase of player.video.phrases) {
-    for (const word of phrase.children) {
-      for (const char of word.children) {
-        notes.push({
-          "id": Number(new Date().getTime().toString().slice(-7)),
-          "startTime": char.previous?.endTime,
-          "endTime": char.startTime,
-          "ppos": char.startTime,
-          "z": -1000,
-          "xType": 0,
-        })
-      }
-    }
-  }
+function getRandomLylicX(seed: number): number {
+  const max = 7;
+  const randomSeed = (seed * 4364 + 85628) % 294628;
+  const randomNumber = Math.floor(randomSeed / 294628 * (max + 1));
+  return randomNumber;
 }
 
 // クオンタイズ：
@@ -332,7 +268,7 @@ function createNotesFromLylic() {
             "endTime": char.startTime,
             "ppos": startTime,
             "z": -1000,
-            "xType": 0,
+            "xType": getRandomLylicX(startTime),
           })
         }
       } else {
@@ -344,7 +280,7 @@ function createNotesFromLylic() {
           "endTime": word.startTime,
           "ppos": startTime,
           "z": -1000,
-          "xType": 0,
+          "xType": getRandomLylicX(startTime),
         })
       }
     }
@@ -384,7 +320,7 @@ player.addListener({
       if (player.isPlaying) {
         return
       }
-      createNotesFromBeat();
+      // createNotesFromBeat();
       // createNotesFromPhrase();
       // createNotesFromWord();
       createNotesFromLylic();
