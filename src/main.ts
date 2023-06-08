@@ -38,6 +38,7 @@ const sketch = (p: p5) => {
     p.textFont(font)
     p.textAlign(p.CENTER, p.CENTER)
     p.textSize(50)
+    p.angleMode(p.DEGREES)
   }
 
   p.draw = () => {
@@ -102,44 +103,66 @@ const sketch = (p: p5) => {
         }
       }
 
-      // ノーツ: ビートに合わせて
-      // zが-1000->250=1250
-      // NOTES_DURATIONが500ms
-      // 1250/500 <-フレーム毎のz軸変化
-      const Z_INCREMENT = 1250/NOTES_DURATION
-      notes.forEach((n: NotesObj) => {
-        if (n.ppos-NOTES_DURATION <= position) {
-          p.push()
-          // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
-          switch (n.xType) {
-            case 0:
-              p.translate(0, 200, n.z)
-              break;
-            case 1:
-              p.translate(60, 200, n.z)
-              // p.translate(0, 200, n.z)
-              p.fill(255,0,0)
-              break;
+      // const position = player.timer.position
+      const noteSpeed = 0.5
+      const noteSize = 25
 
-            default:
-              break;
-          }
-          p.ellipse(0, 0, 30, 30)
-          p.pop()
-          n.z += p.deltaTime*Z_INCREMENT
-        }
-      })
-      p.stroke(255);
-      p.strokeWeight(1);
-      p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
+      const posX = (i: number) => p.map(i, 0, 7, -p.width / 6, p.width / 6)
 
-      notes = notes.filter((object) => object.z < p.windowHeight);
+      p.rotateX(60)
+      p.translate(0, p.height / 4, 0)
+      p.stroke(255)
+      p.line(-p.width / 2, 100, p.width / 2, 100)
 
-      for (const b of player.getBeats()) {
-        if (b.startTime <= position && position < b.endTime) {
-          p.text(b.index, 0, -320)
-        }
+      for (let i = 0; i <= 8; i++) {
+        p.line(posX(i - 0.5), -p.height * 2, posX(i - 0.5), p.height)
       }
+
+      p.translate(0, position * noteSpeed, 0)
+      for (const beat of player.getBeats()) {
+        p.randomSeed(beat.startTime)
+        const posY = -beat.startTime * noteSpeed
+        p.circle(posX(p.floor(p.random(8))), posY, noteSize)
+      }
+
+      // // ノーツ: ビートに合わせて
+      // // zが-1000->250=1250
+      // // NOTES_DURATIONが500ms
+      // // 1250/500 <-フレーム毎のz軸変化
+      // const Z_INCREMENT = 1250/NOTES_DURATION
+      // notes.forEach((n: NotesObj) => {
+      //   if (n.ppos-NOTES_DURATION <= position && position < n.ppos) {
+      //     p.push()
+      //     // p.translate(0, 200, observe(`Notes Z-${n.id}`, n.z))
+      //     switch (n.xType) {
+      //       case 0:
+      //         p.translate(0, 200, n.z)
+      //         break;
+      //       case 1:
+      //         p.translate(60, 200, n.z)
+      //         // p.translate(0, 200, n.z)
+      //         p.fill(255,0,0)
+      //         break;
+
+      //       default:
+      //         break;
+      //     }
+      //     p.ellipse(0, 0, 30, 30)
+      //     p.pop()
+      //     n.z += p.deltaTime*Z_INCREMENT
+      //   }
+      // })
+      // p.stroke(255);
+      // p.strokeWeight(1);
+      // p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
+
+      // notes = notes.filter((object) => object.z < p.windowHeight);
+
+      // for (const b of player.getBeats()) {
+      //   if (b.startTime <= position && position < b.endTime) {
+      //     p.text(b.index, 0, -320)
+      //   }
+      // }
 
     }
 
