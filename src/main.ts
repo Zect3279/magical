@@ -10,6 +10,7 @@ type CirclePose = {
 }
 type NotesObj = {
   id: number,
+  text: string,
   startTime: number
   endTime: number
   ppos: number
@@ -18,13 +19,22 @@ type NotesObj = {
   color?: string
 }
 
+type LylicColor = {
+  text: string,
+  startTime: number,
+  r: number,
+  g: number,
+  b: number
+}
+
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 const NOTES_DURATION = 2000;
-let notes: Array<NotesObj> = []
+let notes: NotesObj[] = []
 const noteSpeed = 1
 const noteSize = 25
+let lylicColors: LylicColor[] = []
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -78,32 +88,73 @@ const sketch = (p: p5) => {
       p.fill(255)
       const position = player.timer.position
       // p.text(position, 0, 70)
+
+      // // lylicClors
+      // // startTime一致で色を変える
+      // // 歌詞蓄積をし、一行いっぱいになる毎に次の行へ
+      // // 参考：https://github.com/TextAliveJp/textalive-app-lyric-sheet
       // for (const phrase of player.video.phrases) {
       //   for (const word of phrase.children) {
       //     for (const char of word.children) {
       //       if (char.startTime <= position && position < char.endTime) {
-      //         p.text(char.text, 0, 0)
+      //         p.push()
+      //         for (const l of lylicColors) {
+      //           if (char.startTime == l.startTime) {
+      //             p.fill(l.r, l.g, l.b)
+      //           }
+      //         }
+      //         p.text(char.text, 0, -140)
+      //         p.pop()
       //       }
       //     }
-      //     if (word.startTime <= position && position < word.endTime) {
-      //       p.text(word.text, 0, -70)
-      //     }
+      //     // if (word.startTime <= position && position < word.endTime) {
+      //     //   p.text(word.text, 0, -70)
+      //     // }
       //   }
-      //   if (phrase.startTime <= position && position < phrase.endTime) {
-      //     p.text(phrase.text, 0, -140)
-      //   }
+      //   // if (phrase.startTime <= position && position < phrase.endTime) {
+      //   //   p.text(phrase.text, 0, -140)
+      //   // }
       // }
-      // for (const s of chorus_data["repeatSegments"]) {
-      //   for (const r of s["repeats"]) {
-      //     if (r["start"] <= position && position < (r["start"] + r["duration"])) {
-      //       if (s["isChorus"]) {
-      //         p.text("サビ", 0, -230)
-      //       } else {
-      //         p.text(`${s["index"]}-${r["index"]}`, 0, -230)
-      //       }
-      //     }
-      //   }
-      // }
+      let phrases = []
+      for (const phrase of player.video.phrases) {
+        for (const word of phrase.children) {
+          for (const char of word.children) {
+            if (phrase.startTime <= char.startTime && char.endTime <= phrase.endTime && phrase.startTime <= position && position <= phrase.endTime) {
+              for (const lylic of lylicColors) {
+                if (phrase.startTime <= lylic.startTime && lylic.startTime <= phrase.endTime) {
+                  // なんか処理
+                }
+              }
+              const fragment: LylicColor = {
+                text: char.text,
+                startTime: phrase.startTime,
+                r: 0,
+                g: 0,
+                b: 0
+              }
+              phrases.push(fragment)
+            }
+          }
+        }
+      }
+      let lylicBase: string = ""
+      for (const p of phrases) {
+        lylicBase += `${p.text}`
+      }
+      p.text(lylicBase, 0, -140)
+
+
+      for (const s of chorus_data["repeatSegments"]) {
+        for (const r of s["repeats"]) {
+          if (r["start"] <= position && position < (r["start"] + r["duration"])) {
+            if (s["isChorus"]) {
+              p.text("サビ", 0, -230)
+            } else {
+              p.text(`${s["index"]}-${r["index"]}`, 0, -230)
+            }
+          }
+        }
+      }
 
       // const position = player.timer.position
       p.push()
@@ -182,19 +233,41 @@ const sketch = (p: p5) => {
       if (!(-50 <= posY && posY <= 50)) {
         return
       }
+      console.log(n.text)
       //TODO Miss判定 Bad判定
       if ((-50 <= posY && posY < -30) || (30 < posY && posY <= 50)) {
         // Good判定
         console.log("good")
         n.color="green"
+        lylicColors.push({
+          "text": n.text,
+          "startTime": n.startTime,
+          "r": 0,
+          "g": 256,
+          "b": 0
+        })
       } else if ((-30 <= posY && posY < 10) || (10 < posY && posY <= 30)) {
         // Great判定
         console.log("great")
         n.color="blue"
+        lylicColors.push({
+          "text": n.text,
+          "startTime": n.startTime,
+          "r": 0,
+          "g": 0,
+          "b": 256
+        })
       } else if (-10 <= posY && posY <= 10) {
         // Perfect判定
         console.log("perfect")
         n.color="rainbow"
+        lylicColors.push({
+          "text": n.text,
+          "startTime": n.startTime,
+          "r": 256,
+          "g": 0,
+          "b": 0
+        })
       }
     })
   }
@@ -271,6 +344,7 @@ function createNotesFromLylic() {
           // const startTime = char.startTime
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
+            "text": char.text,
             "startTime": char.previous?.endTime,
             "endTime": char.startTime,
             "ppos": startTime,
@@ -283,6 +357,7 @@ function createNotesFromLylic() {
         // const startTime = word.startTime
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
+          "text": word.text,
           "startTime": word.previous?.endTime,
           "endTime": word.startTime,
           "ppos": startTime,
@@ -348,11 +423,6 @@ player.addListener({
       // document.removeEventListener('click', clickHandler);
     }
     document.addEventListener('click', clickHandler);
-      notes = []
-      // createNotesFromBeat();
-      // createNotesFromPhrase();
-      // createNotesFromWord();
-      createNotesFromLylic();
   },
   onDispose() {
       console.log("end from dispose")
