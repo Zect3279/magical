@@ -17,24 +17,15 @@ type NotesObj = {
   z: number
   xType: number
   color?: string
-}
-
-type LylicColor = {
-  text: string,
-  startTime: number,
-  r: number,
-  g: number,
-  b: number
+  type: string
 }
 
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
-const NOTES_DURATION = 2000;
 let notes: NotesObj[] = []
 const noteSpeed = 1
 const noteSize = 25
-let lylicColors: LylicColor[] = []
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -87,54 +78,18 @@ const sketch = (p: p5) => {
       p.textSize(50)
       p.fill(255)
       const position = player.timer.position
-      // p.text(position, 0, 70)
-
-      // // lylicClors
-      // // startTime一致で色を変える
-      // // 歌詞蓄積をし、一行いっぱいになる毎に次の行へ
-      // // 参考：https://github.com/TextAliveJp/textalive-app-lyric-sheet
-      // for (const phrase of player.video.phrases) {
-      //   for (const word of phrase.children) {
-      //     for (const char of word.children) {
-      //       if (char.startTime <= position && position < char.endTime) {
-      //         p.push()
-      //         for (const l of lylicColors) {
-      //           if (char.startTime == l.startTime) {
-      //             p.fill(l.r, l.g, l.b)
-      //           }
-      //         }
-      //         p.text(char.text, 0, -140)
-      //         p.pop()
-      //       }
-      //     }
-      //     // if (word.startTime <= position && position < word.endTime) {
-      //     //   p.text(word.text, 0, -70)
-      //     // }
-      //   }
-      //   // if (phrase.startTime <= position && position < phrase.endTime) {
-      //   //   p.text(phrase.text, 0, -140)
-      //   // }
-      // }
       let phrases = []
+      let phraseStart = 0
+      let phraseEnd = 0
       for (const phrase of player.video.phrases) {
-        for (const word of phrase.children) {
-          for (const char of word.children) {
-            if (phrase.startTime <= char.startTime && char.endTime <= phrase.endTime && phrase.startTime <= position && position <= phrase.endTime) {
-              for (const lylic of lylicColors) {
-                if (phrase.startTime <= lylic.startTime && lylic.startTime <= phrase.endTime) {
-                  // なんか処理
-                }
-              }
-              const fragment: LylicColor = {
-                text: char.text,
-                startTime: phrase.startTime,
-                r: 0,
-                g: 0,
-                b: 0
-              }
-              phrases.push(fragment)
-            }
-          }
+        if (phrase.startTime <= position && position <= phrase.endTime) {
+          phraseStart = phrase.startTime
+          phraseEnd = phrase.endTime
+        }
+      }
+      for (const n of notes) {
+        if (phraseStart <= n.startTime && n.endTime <= phraseEnd) {
+          phrases.push({"text": n.text, "color": n.color})
         }
       }
       let lylicBase: string = ""
@@ -142,6 +97,24 @@ const sketch = (p: p5) => {
         lylicBase += `${p.text}`
       }
       p.text(lylicBase, 0, -140)
+
+      let textWidth = 0
+      for (let i = 0; i < lylicBase.length; i++) {
+        textWidth += p.textWidth(lylicBase[i])
+      }
+      p.push()
+      p.textAlign(p.LEFT)
+      let currentPos = -textWidth/2
+      for (const phrase of phrases) {
+        p.push()
+        if (phrase.color !== undefined) {
+          p.fill(phrase.color)
+        }
+        p.text(phrase.text, currentPos, 120)
+        p.pop()
+        currentPos += p.textWidth(phrase.text)
+      }
+      p.pop()
 
 
       for (const s of chorus_data["repeatSegments"]) {
@@ -156,7 +129,6 @@ const sketch = (p: p5) => {
         }
       }
 
-      // const position = player.timer.position
       p.push()
 
       const posX = (i: number) => p.map(i, 0, 7, -p.width / 6, p.width / 6)
@@ -171,11 +143,6 @@ const sketch = (p: p5) => {
       }
 
       p.translate(0, position * noteSpeed, 0)
-      // for (const beat of player.getBeats()) {
-      //   p.randomSeed(beat.startTime)
-      //   const posY = -beat.startTime * noteSpeed
-      //   p.circle(posX(p.floor(p.random(8))), posY, noteSize)
-      // }
 
       notes.forEach((n: NotesObj) => {
         p.randomSeed(n.ppos)
@@ -184,7 +151,7 @@ const sketch = (p: p5) => {
         p.circle(posX(n.xType), posY, noteSize)
       })
 
-      notes = notes.filter((object) => (position * noteSpeed)-(object.ppos * noteSpeed) <= 100);
+      // notes = notes.filter((object) => (position * noteSpeed)-(object.ppos * noteSpeed) <= 100);
 
       p.pop()
 
@@ -212,24 +179,14 @@ const sketch = (p: p5) => {
     if (!(player.isPlaying && chorus_data)) {
       return
     }
-    // console.log("click")
     const x = p.mouseX - p.width / 2
     const y = p.mouseY - p.height / 2
     const position = player.timer.position
 
-    // クリック場所に目印を付ける
     objects.push({ x: x, y: y, life: 500 })
 
-    // ノーツ当たり判定処理
-    //   被クリック座標でX軸のtypeを特定
-    //   ノーツzが判定軸の前後15から評価開始
-    // クリックで消滅させる
-    // lifeで削除されるとmiss判定
-    // const line_x = 0
-    // console.log(position * noteSpeed)
     notes.forEach((n) => {
       const posY = (position * noteSpeed)-(n.ppos * noteSpeed)
-      // console.log(((position * noteSpeed)-(n.ppos * noteSpeed)))
       if (!(-50 <= posY && posY <= 50)) {
         return
       }
@@ -238,36 +195,15 @@ const sketch = (p: p5) => {
       if ((-50 <= posY && posY < -30) || (30 < posY && posY <= 50)) {
         // Good判定
         console.log("good")
-        n.color="green"
-        lylicColors.push({
-          "text": n.text,
-          "startTime": n.startTime,
-          "r": 0,
-          "g": 256,
-          "b": 0
-        })
+        n.color="rgb(0, 256, 0)" // green
       } else if ((-30 <= posY && posY < 10) || (10 < posY && posY <= 30)) {
         // Great判定
         console.log("great")
-        n.color="blue"
-        lylicColors.push({
-          "text": n.text,
-          "startTime": n.startTime,
-          "r": 0,
-          "g": 0,
-          "b": 256
-        })
+        n.color="rgb(0, 0, 256)" // blue
       } else if (-10 <= posY && posY <= 10) {
         // Perfect判定
         console.log("perfect")
-        n.color="rainbow"
-        lylicColors.push({
-          "text": n.text,
-          "startTime": n.startTime,
-          "r": 256,
-          "g": 0,
-          "b": 0
-        })
+        n.color="rgb(256, 0, 0)" // red
       }
     })
   }
@@ -294,20 +230,14 @@ function getRandomLylicX(seed: number): number {
 function quantizeValue(upperValues: number[], lowerValue: number): number {
   let quantizedValue = lowerValue;
   let j = 0;
-
-  while (quantizedValue > upperValues[j]) {
-    j++;
-  }
-
+  while (quantizedValue > upperValues[j]) { j++; }
   if (j > 0) {
     const diff1 = quantizedValue - upperValues[j - 1];
     const diff2 = upperValues[j] - quantizedValue;
-
     quantizedValue = diff1 < diff2 ? upperValues[j - 1] : upperValues[j];
   } else {
     quantizedValue = upperValues[j];
   }
-
   return quantizedValue;
 }
 
@@ -345,11 +275,12 @@ function createNotesFromLylic() {
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "text": char.text,
-            "startTime": char.previous?.endTime,
-            "endTime": char.startTime,
+            "startTime": char.startTime,
+            "endTime": char.endTime,
             "ppos": startTime,
             "z": -1000,
             "xType": getRandomLylicX(startTime),
+            "type": "char"
           })
         }
       } else {
@@ -358,11 +289,12 @@ function createNotesFromLylic() {
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
           "text": word.text,
-          "startTime": word.previous?.endTime,
-          "endTime": word.startTime,
+          "startTime": word.startTime,
+          "endTime": word.endTime,
           "ppos": startTime,
           "z": -1000,
           "xType": getRandomLylicX(startTime),
+          "type": "word"
         })
       }
     }
@@ -415,8 +347,6 @@ player.addListener({
         return
       }
       // createNotesFromBeat();
-      // createNotesFromPhrase();
-      // createNotesFromWord();
       createNotesFromLylic();
 
       player.requestPlay();
