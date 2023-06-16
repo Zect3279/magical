@@ -194,6 +194,8 @@ const sketch = (p: p5) => {
         n.color="rgb(256, 0, 0)" // red
       }
     })
+    // prevent default
+    return false;
   }
 }
 
