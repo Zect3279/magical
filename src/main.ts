@@ -55,24 +55,6 @@ const sketch = (p: p5) => {
       p.textSize(20)
       p.text("画面をクリックして開始", 0, 120)
 
-      p.push()
-      p.translate(0, 200, 250)
-      p.ellipse(0, 0, 30, 30)
-      p.pop()
-
-      p.push()
-      p.translate(60, 200, 250)
-      p.ellipse(0, 0, 30, 30)
-      p.pop()
-
-      p.push()
-      p.translate(-60, 200, 250)
-      p.ellipse(0, 0, 30, 30)
-      p.pop()
-
-      p.stroke(255);
-      p.strokeWeight(1);
-      p.line(-p.windowWidth/2, 200, 250, p.windowWidth/2, 200, 250);
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
@@ -93,8 +75,14 @@ const sketch = (p: p5) => {
         }
       }
       let lylicBase: string = ""
-      for (const p of phrases) {
-        lylicBase += `${p.text}`
+      const alphabetPattern = /^[A-Za-z]+$/
+      for (const [i, p] of phrases.entries()) {
+        if (alphabetPattern.test(p.text) && alphabetPattern.test(phrases[i+1]?.text)) {
+          lylicBase += `${p.text} `
+          p.text += ' '
+        } else {
+          lylicBase += `${p.text}`
+        }
       }
       p.text(lylicBase, 0, -140)
 
