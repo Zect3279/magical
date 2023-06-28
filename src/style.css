@@ -1,6 +1,15 @@
 html, body {
   margin: 0;
   padding: 0;
+  /*スクロールバー非表示（IE・Edge）*/
+  -ms-overflow-style: none;
+  /*スクロールバー非表示（Firefox）*/
+  scrollbar-width: none;
+}
+
+/*スクロールバー非表示（Chrome・Safari）*/
+html::-webkit-scrollbar, body::-webkit-scrollbar{
+  display:none;
 }
 
 canvas {

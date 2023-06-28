@@ -9,10 +9,12 @@ type CirclePose = {
   life: number
 }
 type NotesObj = {
-  id: number,
-  text: string,
+  id: number
+  text: string
   startTime: number
   endTime: number
+  NstartTime: number
+  NendTime: number
   ppos: number
   z: number
   xType: number
@@ -36,15 +38,20 @@ const sketch = (p: p5) => {
   }
 
   p.setup = () => {
+    console.log(p.windowWidth)
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL)
-    p.drawingContext.disable(p.drawingContext.DEPTH_TEST)
+    // p.drawingContext.disable(p.drawingContext.DEPTH_TEST)
     p.textFont(font)
     p.textAlign(p.CENTER, p.CENTER)
     p.textSize(50)
     p.angleMode(p.DEGREES)
+    p.rectMode(p.CENTER)
+    // p.noStroke()
   }
 
   p.draw = () => {
+    const centerY = p.height * 0.6 / 2
+    // p.translate(p.width/2, p.height/2)
     if (endLoad && !player.isPlaying) {
       p.background(50)
       p.textSize(50)
@@ -55,6 +62,24 @@ const sketch = (p: p5) => {
       p.textSize(20)
       p.text("画面をクリックして開始", 0, 120)
 
+      p.push()
+
+      p.translate(0, centerY)
+      p.rotateX(60)
+      // p.translate(0,0)
+
+      const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
+
+      for (let i = 0; i <= 8; i++) {
+        p.line(posX(i), -p.height*2, posX(i), p.height/2)
+      }
+
+      // p.line(-p.width/2, -10, p.width/2, -10)
+      p.line(-p.width/2, 0, p.width/2, 0)
+      // p.line(-p.width/2, 10, p.width/2, 10)
+
+      //
+      p.pop()
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
@@ -118,29 +143,32 @@ const sketch = (p: p5) => {
       }
 
       p.push()
-
-      const posX = (i: number) => p.map(i, 0, 7, -p.width / 6, p.width / 6)
-
-      p.rotateX(60)
-      p.translate(0, (p.height / 4)+100, 0)
       p.stroke(255)
-      p.line(-p.width / 2, 0, p.width / 2, 0)
+
+      p.translate(0, centerY)
+      p.rotateX(60)
+      // p.translate(0,0)
+
+      const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
       for (let i = 0; i <= 8; i++) {
-        p.line(posX(i - 0.5), -p.height * 2, posX(i - 0.5), p.height)
+        p.line(posX(i), -p.height*2, posX(i), p.height/2)
       }
 
-      p.translate(0, position * noteSpeed, 0)
+      // p.line(-p.width/2, -10, p.width/2, -10)
+      p.line(-p.width/2, 0, p.width/2, 0)
+      // p.line(-p.width/2, 10, p.width/2, 10)
 
       notes.forEach((n: NotesObj) => {
-        p.randomSeed(n.ppos)
-        const posY = -n.ppos * noteSpeed
-        // console.log(posY)
-        p.circle(posX(n.xType), posY, noteSize)
+        if (n.NstartTime <= position && position <= n.NendTime) {
+          if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
+          const posY
+          = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
+          p.circle(posX(n.xType), posY, noteSize)
+        }
       })
 
-      // notes = notes.filter((object) => (position * noteSpeed)-(object.ppos * noteSpeed) <= 100);
-
+      //
       p.pop()
 
       for (const b of player.getBeats()) {
@@ -174,21 +202,21 @@ const sketch = (p: p5) => {
     objects.push({ x: x, y: y, life: 500 })
 
     notes.forEach((n) => {
-      const posY = (position * noteSpeed)-(n.ppos * noteSpeed)
+      const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
       if (!(-50 <= posY && posY <= 50)) {
         return
       }
       console.log(n.text)
       //TODO Miss判定 Bad判定
-      if ((-50 <= posY && posY < -30) || (30 < posY && posY <= 50)) {
+      if ((-100 <= posY && posY < -60) || (60 < posY && posY <= 100)) {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
-      } else if ((-30 <= posY && posY < 10) || (10 < posY && posY <= 30)) {
+      } else if ((-60 <= posY && posY < 30) || (30 < posY && posY <= 60)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
-      } else if (-10 <= posY && posY <= 10) {
+      } else if (-30 <= posY && posY <= 30) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
@@ -245,6 +273,7 @@ function divideList(list: number[]) {
   return output;
 }
 
+// クオンタイズがダメっぽい
 function createNotesFromLylic() {
   console.log(player.getBeats()[0].duration *2)
 
@@ -260,13 +289,15 @@ function createNotesFromLylic() {
     for (const word of phrase.children) {
       if (word.duration >= player.getBeats()[0].duration *2) {
         for (const char of word.children) {
-          const startTime = quantizeValue(upperValues, char.startTime)
-          // const startTime = char.startTime
+          // const startTime = quantizeValue(upperValues, char.startTime)
+          const startTime = char.startTime
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "text": char.text,
             "startTime": char.startTime,
             "endTime": char.endTime,
+            "NstartTime": startTime - 1000*noteSpeed,
+            "NendTime": startTime + 1000*noteSpeed,
             "ppos": startTime,
             "z": -1000,
             "xType": getRandomLylicX(startTime),
@@ -274,13 +305,15 @@ function createNotesFromLylic() {
           })
         }
       } else {
-        const startTime = quantizeValue(upperValues, word.startTime)
-        // const startTime = word.startTime
+        // const startTime = quantizeValue(upperValues, word.startTime)
+        const startTime = word.startTime
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
           "text": word.text,
           "startTime": word.startTime,
           "endTime": word.endTime,
+          "NstartTime": startTime - 1000*noteSpeed,
+          "NendTime": startTime + 1000*noteSpeed,
           "ppos": startTime,
           "z": -1000,
           "xType": getRandomLylicX(startTime),
@@ -314,6 +347,7 @@ player.addListener({
           repetitiveSegmentId: 2405019,
           // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FucgN%2F20230110005414
           lyricId: 56092,
+          // lyricDiffId: 10701
           lyricDiffId: 9636
         },
       })
