@@ -46,6 +46,7 @@ const sketch = (p: p5) => {
     p.textSize(50)
     p.angleMode(p.DEGREES)
     p.rectMode(p.CENTER)
+    p.frameRate(60)
     // p.noStroke()
   }
 
@@ -245,31 +246,44 @@ function getRandomLylicX(seed: number): number {
 //   歌詞のタイミングをビートでクオンタイズ
 //   upper: ビート
 //   input: 歌詞
-function quantizeValue(upperValues: number[], lowerValue: number): number {
-  let quantizedValue = lowerValue;
-  let j = 0;
-  while (quantizedValue > upperValues[j]) { j++; }
-  if (j > 0) {
-    const diff1 = quantizedValue - upperValues[j - 1];
-    const diff2 = upperValues[j] - quantizedValue;
-    quantizedValue = diff1 < diff2 ? upperValues[j - 1] : upperValues[j];
-  } else {
-    quantizedValue = upperValues[j];
-  }
-  return quantizedValue;
+// function quantizeValue(lowerValue: number, upperValues: number[]): number {
+//   let quantizedValue = lowerValue;
+//   let j = 0;
+//   while (quantizedValue > upperValues[j]) { j++; }
+//   if (j > 0) {
+//     const diff1 = quantizedValue - upperValues[j - 1];
+//     const diff2 = upperValues[j] - quantizedValue;
+//     quantizedValue = diff1 < diff2 ? upperValues[j - 1] : upperValues[j];
+//   } else {
+//     quantizedValue = upperValues[j];
+//   }
+//   return quantizedValue;
+// }
+
+function quantizeValue(value: number, array: number[]): number {
+  // console.log(value)
+  // console.log(array.length)
+  // const value = 100; // 調べたい値
+  // const array = [1, 123, 13, 84, 255, 3, 136, 96, 117, 62]; // 調べたい配列
+  const diff: number[] = [];
+  let index = 0;
+
+  array.forEach((val: number, i) => {
+    diff[i] = Math.abs(value - val);
+    index = diff[index] < diff[i] ? index : i;
+  });
+  return array[index]
 }
 
-function divideList(list: number[]) {
-  let output = [];
-  for (let i = 0; i < list.length; i++) {
-    output.push(
-      list[i],
-      // 3 * list[i] / 4 + list[i+1] / 4,
-      (list[i] + list[i+1]) / 2,
-      // list[i] / 4 + 3 * list[i+1] / 4
-      );
-    output.push()
-  }
+function divideList(list: number[]): number[] {
+  let output: number[] = [];
+  list.forEach((b, i) => {
+    if (i == list.length) { output.push(b) }
+    else {
+      output.push(b)
+      output.push((list[i] + list[i+1])/2)
+    }
+  })
   return output;
 }
 
@@ -277,20 +291,20 @@ function divideList(list: number[]) {
 function createNotesFromLylic() {
   console.log(player.getBeats()[0].duration *2)
 
-  const quaValues: number[] = []
-  for (const b of player.getBeats()) {
-    quaValues.push(b.startTime)
-  }
-  console.log(quaValues.slice(0,5))
-  const upperValues = divideList(quaValues);
-  console.log(upperValues.slice(0,20))
+  const beats: number[] = []
+  player.getBeats().forEach((b) => { beats.push(b.startTime) })
+  console.log(beats.slice(0,5))
+  const halfBeats = divideList(beats)
+  console.log(halfBeats.slice(0,10))
 
   for (const phrase of player.video.phrases) {
     for (const word of phrase.children) {
       if (word.duration >= player.getBeats()[0].duration *2) {
         for (const char of word.children) {
-          // const startTime = quantizeValue(upperValues, char.startTime)
-          const startTime = char.startTime
+          // const startTime: number = quantizeValue(char.startTime, beats)
+          const startTime: number = quantizeValue(char.startTime, halfBeats)
+          console.log(startTime)
+          // const startTime = char.startTime
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "text": char.text,
@@ -305,8 +319,9 @@ function createNotesFromLylic() {
           })
         }
       } else {
-        // const startTime = quantizeValue(upperValues, word.startTime)
-        const startTime = word.startTime
+        // const startTime = quantizeValue(word.startTime, beats)
+        const startTime = quantizeValue(word.startTime, halfBeats)
+        // const startTime = word.startTime
         notes.push({
           "id": Number(new Date().getTime().toString().slice(-7)),
           "text": word.text,
