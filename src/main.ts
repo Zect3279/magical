@@ -26,7 +26,7 @@ var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 let notes: NotesObj[] = []
-const noteSpeed = 1
+const noteSpeed = 2
 const noteSize = 25
 
 const sketch = (p: p5) => {
@@ -48,6 +48,7 @@ const sketch = (p: p5) => {
     p.rectMode(p.CENTER)
     p.frameRate(60)
     // p.noStroke()
+    // p.saveGif("test", 20)
   }
 
   p.draw = () => {
@@ -75,10 +76,30 @@ const sketch = (p: p5) => {
         p.line(posX(i), -p.height*2, posX(i), p.height/2)
       }
 
-      // p.line(-p.width/2, -10, p.width/2, -10)
-      p.line(-p.width/2, 0, p.width/2, 0)
-      // p.line(-p.width/2, 10, p.width/2, 10)
+      p.line(-p.width/2, -20, p.width/2, -20)
+      // p.line(-p.width/2, 0, p.width/2, 0)
+      p.line(-p.width/2, 20, p.width/2, 20)
 
+      p.circle(posX(1), -20 - noteSize/2, noteSize)
+      p.circle(posX(2), -20, noteSize)
+      p.circle(posX(3), -20 + noteSize/2, noteSize)
+      p.circle(posX(4), 0, noteSize)
+      p.circle(posX(5), 20 - noteSize/2, noteSize)
+      p.circle(posX(6), 20, noteSize)
+      p.circle(posX(7), 20 + noteSize/2, noteSize)
+
+      // p.push();
+      // p.noLoop();
+      // p.textSize(50)
+      // p.fill(100,100);
+      // p.stroke(100);
+      // p.strokeWeight(3);
+      // p.strokeJoin(p.BEVEL);
+      // p.drawingContext.setLineDash([1,5]);
+      // p.strokeCap(p.PROJECT);
+      // p.textStyle(p.BOLDITALIC);
+      // p.text("S", 0, 0);
+      // p.pop();
       //
       p.pop()
     } else if (player.isPlaying && chorus_data) {
@@ -87,19 +108,30 @@ const sketch = (p: p5) => {
       p.fill(255)
       const position = player.timer.position
       let phrases = []
+      let phrasesPrevious = []
       let phraseStart = 0
       let phraseEnd = 0
+      let phraseStartPrevious = 0
+      let phraseEndPrevious = 0
       for (const phrase of player.video.phrases) {
         if (phrase.startTime <= position && position <= phrase.endTime) {
           phraseStart = phrase.startTime
           phraseEnd = phrase.endTime
+          phraseStartPrevious = phrase.previous.startTime
+          phraseEndPrevious = phrase.previous.endTime
         }
       }
       for (const n of notes) {
         if (phraseStart <= n.startTime && n.endTime <= phraseEnd) {
           phrases.push({"text": n.text, "color": n.color})
         }
+        if (phraseStartPrevious <= n.startTime && n.endTime <= phraseEndPrevious) {
+          phrasesPrevious.push({"text": n.text, "color": n.color})
+        }
       }
+
+      // 今の歌詞
+      p.textSize(50)
       let lylicBase: string = ""
       const alphabetPattern = /^[A-Za-z]+$/
       for (const [i, p] of phrases.entries()) {
@@ -111,7 +143,7 @@ const sketch = (p: p5) => {
         }
       }
       p.text(lylicBase, 0, -140)
-
+      //   色を変える
       let textWidth = 0
       for (let i = 0; i < lylicBase.length; i++) {
         textWidth += p.textWidth(lylicBase[i])
@@ -130,6 +162,36 @@ const sketch = (p: p5) => {
       }
       p.pop()
 
+      // 前の歌詞
+      p.textSize(30)
+      let lylicBasePrevious: string = ""
+      for (const [i, p] of phrasesPrevious.entries()) {
+        if (alphabetPattern.test(p.text) && alphabetPattern.test(phrasesPrevious[i+1]?.text)) {
+          lylicBasePrevious += `${p.text} `
+          p.text += ' '
+        } else {
+          lylicBasePrevious += `${p.text}`
+        }
+      }
+      // p.text(lylicBasePrevious, 0, 100)
+      //   色を変える
+      let textWidthPrevious = 0
+      for (let i = 0; i < lylicBasePrevious.length; i++) {
+        textWidthPrevious += p.textWidth(lylicBasePrevious[i])
+      }
+      p.push()
+      p.textAlign(p.LEFT)
+      let currentPosPrevious = -textWidthPrevious/2
+      for (const phrase of phrasesPrevious) {
+        p.push()
+        if (phrase.color !== undefined) {
+          p.fill(phrase.color)
+        }
+        p.text(phrase.text, currentPosPrevious, 70)
+        p.pop()
+        currentPosPrevious += p.textWidth(phrase.text)
+      }
+      p.pop()
 
       for (const s of chorus_data["repeatSegments"]) {
         for (const r of s["repeats"]) {
@@ -156,16 +218,16 @@ const sketch = (p: p5) => {
         p.line(posX(i), -p.height*2, posX(i), p.height/2)
       }
 
-      // p.line(-p.width/2, -10, p.width/2, -10)
-      p.line(-p.width/2, 0, p.width/2, 0)
-      // p.line(-p.width/2, 10, p.width/2, 10)
+      p.line(-p.width/2, -20, p.width/2, -20)
+      // p.line(-p.width/2, 0, p.width/2, 0)
+      p.line(-p.width/2, 20, p.width/2, 20)
 
       notes.forEach((n: NotesObj) => {
         if (n.NstartTime <= position && position <= n.NendTime) {
           if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
           const posY
           = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
-          p.circle(posX(n.xType), posY, noteSize)
+          p.circle(posX(n.xType+0.5), posY, noteSize)
         }
       })
 
@@ -192,6 +254,64 @@ const sketch = (p: p5) => {
     objects = objects.filter((object) => object.life > 0);
   }
 
+  p.keyPressed = () => {
+    if (p.key == " ") {
+      player.requestStop()
+    }
+    var keyIndex = 0
+    switch (p.key) {
+      case "s":
+        keyIndex = 0
+        break;
+      case "d":
+        keyIndex = 1
+        break;
+      case "f":
+        keyIndex = 2
+        break;
+      case "g":
+        keyIndex = 3
+        break;
+      case "h":
+        keyIndex = 4
+        break;
+      case "j":
+        keyIndex = 5
+        break;
+      case "k":
+        keyIndex = 6
+        break;
+      case "l":
+        keyIndex = 7
+        break;
+      default:
+        break;
+    }
+    const position = player.timer.position
+    notes.forEach((n) => {
+      if (n.xType !== keyIndex) { return }
+      const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
+      if (!((-20 - noteSize/2) <= posY && posY <= (20 + noteSize/2))) {
+        return
+      }
+      console.log(n.text)
+      //TODO Miss判定 Bad判定
+      if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
+        // Good判定
+        console.log("good")
+        n.color="rgb(0, 256, 0)" // green
+      } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
+        // Great判定
+        console.log("great")
+        n.color="rgb(0, 0, 256)" // blue
+      } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
+        // Perfect判定
+        console.log("perfect")
+        n.color="rgb(256, 0, 0)" // red
+      }
+    })
+  }
+
   p.mousePressed = () => {
     if (!(player.isPlaying && chorus_data)) {
       return
@@ -209,20 +329,27 @@ const sketch = (p: p5) => {
       }
       console.log(n.text)
       //TODO Miss判定 Bad判定
-      if ((-100 <= posY && posY < -60) || (60 < posY && posY <= 100)) {
+      if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
-      } else if ((-60 <= posY && posY < 30) || (30 < posY && posY <= 60)) {
+      } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
-      } else if (-30 <= posY && posY <= 30) {
+      } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
       }
     })
+    // p.circle(posX(1), -20 - noteSize/2, noteSize)
+    // p.circle(posX(2), -20, noteSize)
+    // p.circle(posX(3), -20 + noteSize/2, noteSize)
+    // p.circle(posX(4), 0, noteSize)
+    // p.circle(posX(5), 20 - noteSize/2, noteSize)
+    // p.circle(posX(6), 20, noteSize)
+    // p.circle(posX(7), 20 + noteSize/2, noteSize)
     // prevent default
     return false;
   }
@@ -244,22 +371,6 @@ function getRandomLylicX(seed: number): number {
 
 // クオンタイズ：
 //   歌詞のタイミングをビートでクオンタイズ
-//   upper: ビート
-//   input: 歌詞
-// function quantizeValue(lowerValue: number, upperValues: number[]): number {
-//   let quantizedValue = lowerValue;
-//   let j = 0;
-//   while (quantizedValue > upperValues[j]) { j++; }
-//   if (j > 0) {
-//     const diff1 = quantizedValue - upperValues[j - 1];
-//     const diff2 = upperValues[j] - quantizedValue;
-//     quantizedValue = diff1 < diff2 ? upperValues[j - 1] : upperValues[j];
-//   } else {
-//     quantizedValue = upperValues[j];
-//   }
-//   return quantizedValue;
-// }
-
 function quantizeValue(value: number, array: number[]): number {
   // console.log(value)
   // console.log(array.length)
@@ -278,7 +389,7 @@ function quantizeValue(value: number, array: number[]): number {
 function divideList(list: number[]): number[] {
   let output: number[] = [];
   list.forEach((b, i) => {
-    if (i == list.length) { output.push(b) }
+    if (i == (list.length-1)) { output.push(b) }
     else {
       output.push(b)
       output.push((list[i] + list[i+1])/2)
@@ -294,8 +405,10 @@ function createNotesFromLylic() {
   const beats: number[] = []
   player.getBeats().forEach((b) => { beats.push(b.startTime) })
   console.log(beats.slice(0,5))
+  console.log(beats.length)
   const halfBeats = divideList(beats)
-  console.log(halfBeats.slice(0,10))
+  console.log(halfBeats.slice(0,5))
+  console.log(halfBeats.length)
 
   for (const phrase of player.video.phrases) {
     for (const word of phrase.children) {
