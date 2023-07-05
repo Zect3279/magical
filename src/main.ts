@@ -46,23 +46,24 @@ const sketch = (p: p5) => {
 
     // p.scale(2)
     p.fill(255)
-    // p.translate(x, y, 1)
+    p.translate(0, 0, 0.1)
     p.circle(0, 0, S*0.9);
     p.noStroke()
     p.fill(150)
-    // p.translate(x, y, 2)
+    p.translate(0, 0, 0.2)
     p.circle(0, 0, S*0.75);
     p.fill(50)
-    // p.translate(x, y, 3)
+    p.translate(0, 0, 0.3)
     p.circle(0, 0, S*0.5);
     p.stroke(0)
     p.fill(255)
-    // p.translate(x, y, 4)
+    p.translate(0, 0, 0.4)
     p.rect(0, 0, S*1.2, S*0.2, 20);
     p.noStroke()
 
+    p.translate(0, 0, 0.5)
+    p.push()
     p.fill(50)
-    // p.translate(x, y, 5)
     p.beginShape();
       p.vertex(-S*0.025, S*0.025);
       p.vertex(0, S*0.0875);
@@ -73,6 +74,7 @@ const sketch = (p: p5) => {
       p.vertex(-S*0.025, -S*0.02);
       p.vertex(-S*0.0875, 0);
     p.endShape();
+    p.pop()
     p.pop()
   }
 
