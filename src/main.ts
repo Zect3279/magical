@@ -33,6 +33,49 @@ const sketch = (p: p5) => {
   let font: p5.Font
   let objects: Array<CirclePose> = []
 
+  function writeNotes(x: number, y: number, width: number) {
+    p.push()
+    const posX = (i: number) => p.map(i, 0, 8, -width*0.9/2, width*0.9/2)
+
+
+    const S = posX(5) - posX(4)
+    // console.log(S)
+    p.noStroke()
+    // p.stroke(0)
+    p.translate(x, y)
+
+    // p.scale(2)
+    p.fill(255)
+    // p.translate(x, y, 1)
+    p.circle(0, 0, S*0.9);
+    p.noStroke()
+    p.fill(150)
+    // p.translate(x, y, 2)
+    p.circle(0, 0, S*0.75);
+    p.fill(50)
+    // p.translate(x, y, 3)
+    p.circle(0, 0, S*0.5);
+    p.stroke(0)
+    p.fill(255)
+    // p.translate(x, y, 4)
+    p.rect(0, 0, S*1.2, S*0.2, 20);
+    p.noStroke()
+
+    p.fill(50)
+    // p.translate(x, y, 5)
+    p.beginShape();
+      p.vertex(-S*0.025, S*0.025);
+      p.vertex(0, S*0.0875);
+      p.vertex(S*0.025, S*0.025);
+      p.vertex(S*0.0875, 0);
+      p.vertex(S*0.025, -S*0.02);
+      p.vertex(0, -S*0.0875);
+      p.vertex(-S*0.025, -S*0.02);
+      p.vertex(-S*0.0875, 0);
+    p.endShape();
+    p.pop()
+  }
+
   p.preload = () => {
     font = p.loadFont("/ZenOldMincho-Medium.ttf")
   }
@@ -83,7 +126,8 @@ const sketch = (p: p5) => {
       p.circle(posX(1), -20 - noteSize/2, noteSize)
       p.circle(posX(2), -20, noteSize)
       p.circle(posX(3), -20 + noteSize/2, noteSize)
-      p.circle(posX(4), 0, noteSize)
+      // p.circle(posX(4), 0, noteSize)
+      writeNotes(posX(4), -30, p.width)
       p.circle(posX(5), 20 - noteSize/2, noteSize)
       p.circle(posX(6), 20, noteSize)
       p.circle(posX(7), 20 + noteSize/2, noteSize)
@@ -102,6 +146,7 @@ const sketch = (p: p5) => {
       // p.pop();
       //
       p.pop()
+
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
@@ -227,7 +272,8 @@ const sketch = (p: p5) => {
           if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
           const posY
           = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
-          p.circle(posX(n.xType+0.5), posY, noteSize)
+          // p.circle(posX(n.xType+0.5), posY, noteSize)
+          writeNotes(posX(n.xType+0.5), posY, p.width)
         }
       })
 
