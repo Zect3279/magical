@@ -21,6 +21,12 @@ type NotesObj = {
   color?: string
   type: string
 }
+type Particle = {
+  x: number
+  y: number
+  life: number
+  div: 0 | 1
+}
 
 var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
@@ -28,10 +34,11 @@ var chorus_data:any;
 let notes: NotesObj[] = []
 const noteSpeed = 2
 const noteSize = 25
+let particles: Particle[] = []
 
 const sketch = (p: p5) => {
   let font: p5.Font
-  let objects: Array<CirclePose> = []
+  let objects: CirclePose[] = []
 
   function writeNotes(x: number, y: number, width: number) {
     p.push()
@@ -78,6 +85,55 @@ const sketch = (p: p5) => {
     p.pop()
   }
 
+  function writeBackground() {
+    p.push()
+    p.noStroke()
+
+    // p.translate(p.width/2, p.height/2)
+    let n = 20
+    particles.forEach(o => {
+      p.push()
+      p.translate(o.x, o.y)
+      p.scale(0.5)
+      if (o.div == 0) {
+        let co = p.color(255)
+        co.setAlpha(100)
+        p.fill(co)
+        let w = p.map(Ease.quintIn(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 5)
+        let h = p.map(Ease.quadOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 10)
+        p.rotate(45)
+        p.rect(0, 0, n/w, n*h)
+        p.rotate(90)
+        p.rect(0, 0, n/w, n*h)
+      } else if (o.div == 1) {
+        let one = p.map(Ease.quintOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 100)
+        let two = p.map(Ease.bounceOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 99)
+
+        let co = p.color(255)
+        co.setAlpha(100)
+        p.fill(co);
+        p.rect(0, 0, one, one)
+
+        co = p.color(50)
+        // co.setAlpha(100)
+        p.fill(co);
+        p.rect(0, 0, two, two)
+      }
+      p.pop()
+      o.life++
+    });
+    particles.forEach(o => {
+      if (o.life >= 60) {
+        let x = Math.random() * ( p.width ) - p.width/2;
+        let y = Math.random() * ( p.height ) - p.height/2;
+        o.x = x
+        o.y = y
+        o.life = 0
+      }
+    })
+    p.pop()
+  }
+
   p.preload = () => {
     font = p.loadFont("/ZenOldMincho-Medium.ttf")
   }
@@ -94,6 +150,20 @@ const sketch = (p: p5) => {
     p.frameRate(60)
     // p.noStroke()
     // p.saveGif("test", 20)
+
+    for (let i = 0; i < 30; i++) {
+      let x = Math.random() * ( p.width ) - p.width/2;
+      let y = Math.random() * ( p.height ) - p.height/2;
+      let life = Math.random() * 60
+      let div: 0 | 1
+      if (i%4 === 0) {
+        div = 1
+        console.log(i)
+      }
+      else { div = 0 }
+      particles.push({x, y, life, div})
+    }
+
   }
 
   p.draw = () => {
@@ -102,6 +172,9 @@ const sketch = (p: p5) => {
     if (endLoad && !player.isPlaying) {
       p.background(50)
       p.textSize(50)
+
+      writeBackground()
+
       p.fill(255)
       p.text(player.data.song.name, 0, -20)
       p.textSize(30)
@@ -129,7 +202,7 @@ const sketch = (p: p5) => {
       p.circle(posX(2), -20, noteSize)
       p.circle(posX(3), -20 + noteSize/2, noteSize)
       // p.circle(posX(4), 0, noteSize)
-      writeNotes(posX(4), -30, p.width)
+      writeNotes(posX(4), 0, p.width)
       p.circle(posX(5), 20 - noteSize/2, noteSize)
       p.circle(posX(6), 20, noteSize)
       p.circle(posX(7), 20 + noteSize/2, noteSize)
@@ -152,6 +225,9 @@ const sketch = (p: p5) => {
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
       p.textSize(50)
+
+      writeBackground()
+
       p.fill(255)
       const position = player.timer.position
       let phrases = []
