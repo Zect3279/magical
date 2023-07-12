@@ -35,6 +35,7 @@ let notes: NotesObj[] = []
 const noteSpeed = 2
 const noteSize = 25
 let particles: Particle[] = []
+let index = 0;
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -87,6 +88,74 @@ const sketch = (p: p5) => {
 
   function writeBackground() {
     p.push()
+    p.translate(0,0)
+    // p.translate(-p.width/2,-p.height/2)
+    p.translate(p.width/3, -p.height/4)
+
+    if (index%2 == 0) {
+      p.rotate(45)
+    }
+    if (p.frameCount%60 <= 30) {
+      let a = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+      let b = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+      let c = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+      let d = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+      let e = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+      let f = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+      let g = p.map(Ease.quintInOut(p.map((p.frameCount)%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+      p.fill(255);
+      p.rect(0, 0, a, a)
+      p.fill(0);
+      p.rect(0, 0, b, b)
+      p.fill(180);
+      p.rect(0, 0, c, c)
+      p.fill(255);
+      p.rect(0, 0, d, d)
+      p.fill(100);
+      p.rect(0, 0, e, e)
+      p.fill(0);
+      p.rect(0, 0, f, f)
+      p.fill(0)
+      p.rect(0, 0, g, g)
+    }
+    p.pop()
+    p.push()
+    p.translate(0,0)
+    // p.translate(-p.width/2,-p.height/2)
+    p.translate(-p.width/3, -p.height/4)
+
+    if (index%2 == 1) {
+      p.rotate(45)
+    }
+    if (p.frameCount%60 <= 30) {
+      let a = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+      let b = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+      let c = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+      let d = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+      let e = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+      let f = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+      let g = p.map(Ease.quintInOut(p.map((p.frameCount)%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+      p.fill(255);
+      p.rect(0, 0, a, a)
+      p.fill(0);
+      p.rect(0, 0, b, b)
+      p.fill(180);
+      p.rect(0, 0, c, c)
+      p.fill(255);
+      p.rect(0, 0, d, d)
+      p.fill(100);
+      p.rect(0, 0, e, e)
+      p.fill(0);
+      p.rect(0, 0, f, f)
+      p.fill(0)
+      p.rect(0, 0, g, g)
+    }
+    p.pop()
+    if (p.frameCount%60 == 0) {
+      index++
+    }
+
+    p.push()
     p.noStroke()
 
     // p.translate(p.width/2, p.height/2)
@@ -114,7 +183,7 @@ const sketch = (p: p5) => {
         p.fill(co);
         p.rect(0, 0, one, one)
 
-        co = p.color(50)
+        co = p.color(0)
         // co.setAlpha(100)
         p.fill(co);
         p.rect(0, 0, two, two)
@@ -149,7 +218,6 @@ const sketch = (p: p5) => {
     p.rectMode(p.CENTER)
     p.frameRate(60)
     // p.noStroke()
-    // p.saveGif("test", 20)
 
     for (let i = 0; i < 30; i++) {
       let x = Math.random() * ( p.width ) - p.width/2;
@@ -167,6 +235,14 @@ const sketch = (p: p5) => {
   }
 
   p.draw = () => {
+    // let pg = p.createGraphics(p.width, p.height)
+    // pg.textFont(font)
+    // pg.textAlign(p.CENTER, p.CENTER)
+    // pg.textSize(50)
+    // pg.angleMode(p.DEGREES)
+    // pg.rectMode(p.CENTER)
+    // pg.frameRate(60)
+    // // pg.noStroke()
     const centerY = p.height * 0.6 / 2
     // p.translate(p.width/2, p.height/2)
     if (endLoad && !player.isPlaying) {
@@ -207,6 +283,18 @@ const sketch = (p: p5) => {
       p.circle(posX(6), 20, noteSize)
       p.circle(posX(7), 20 + noteSize/2, noteSize)
 
+      const S = posX(5) - posX(4)
+      p.fill(255)
+      p.textSize(S*0.5)
+      p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
+      p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
+      p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
+      p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
+      p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
+      p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
+      p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
+      p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
+
       // p.push();
       // p.noLoop();
       // p.textSize(50)
@@ -221,6 +309,7 @@ const sketch = (p: p5) => {
       // p.pop();
       //
       p.pop()
+      // p.image(pg, 0, 0)
 
     } else if (player.isPlaying && chorus_data) {
       p.background(0)
@@ -345,6 +434,18 @@ const sketch = (p: p5) => {
       // p.line(-p.width/2, 0, p.width/2, 0)
       p.line(-p.width/2, 20, p.width/2, 20)
 
+      const S = posX(5) - posX(4)
+      p.fill(255)
+      p.textSize(S*0.5)
+      p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
+      p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
+      p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
+      p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
+      p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
+      p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
+      p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
+      p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
+
       notes.forEach((n: NotesObj) => {
         if (n.NstartTime <= position && position <= n.NendTime) {
           if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
@@ -376,6 +477,7 @@ const sketch = (p: p5) => {
     });
 
     objects = objects.filter((object) => object.life > 0);
+    // p.image(pg, 0, 0)
   }
 
   p.keyPressed = () => {
