@@ -36,6 +36,7 @@ const noteSpeed = 2
 const noteSize = 25
 let particles: Particle[] = []
 let index = 0;
+let bpm: number
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -92,31 +93,99 @@ const sketch = (p: p5) => {
     // p.translate(-p.width/2,-p.height/2)
     p.translate(p.width/3, -p.height/4)
 
-    if (index%2 == 0) {
-      p.rotate(45)
-    }
-    if (p.frameCount%60 <= 30) {
-      let a = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-      let b = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-      let c = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-      let d = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-      let e = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-      let f = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-      let g = p.map(Ease.quintInOut(p.map((p.frameCount)%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-      p.fill(255);
-      p.rect(0, 0, a, a)
-      p.fill(0);
-      p.rect(0, 0, b, b)
-      p.fill(180);
-      p.rect(0, 0, c, c)
-      p.fill(255);
-      p.rect(0, 0, d, d)
-      p.fill(100);
-      p.rect(0, 0, e, e)
-      p.fill(0);
-      p.rect(0, 0, f, f)
-      p.fill(0)
-      p.rect(0, 0, g, g)
+    switch (index%4) {
+      case 0:
+      case 2:
+        p.push()
+        if (p.frameCount%bpm <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          p.fill(255);
+          p.rect(0, 0, a, a)
+          p.fill(0);
+          p.rect(0, 0, b, b)
+          p.fill(180);
+          p.rect(0, 0, c, c)
+          p.fill(255);
+          p.rect(0, 0, d, d)
+          p.fill(100);
+          p.rect(0, 0, e, e)
+          p.fill(0);
+          p.rect(0, 0, f, f)
+          p.fill(0)
+          p.rect(0, 0, g, g)
+        }
+        p.pop()
+        break;
+      case 1:
+        p.push()
+        p.rotate(45)
+        if (p.frameCount%bpm <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          p.fill(255);
+          p.rect(0, 0, a, a)
+          p.fill(0);
+          p.rect(0, 0, b, b)
+          p.fill(180);
+          p.rect(0, 0, c, c)
+          p.fill(255);
+          p.rect(0, 0, d, d)
+          p.fill(100);
+          p.rect(0, 0, e, e)
+          p.fill(0);
+          p.rect(0, 0, f, f)
+          p.fill(0)
+          p.rect(0, 0, g, g)
+        }
+        p.pop()
+        break;
+      case 3:
+        p.push()
+        p.noStroke()
+        p.rectMode(p.CORNER)
+        p.rect(0,30,10,100)
+        p.rect(0,30,-10,100)
+
+        p.rect(30,0,100,10)
+        p.rect(30,0,100,-10)
+
+        p.rect(0,-30,10,-100)
+        p.rect(0,-30,-10,-100)
+
+        p.rect(-30,0,-100,10)
+        p.rect(-30,0,-100,-10)
+        p.pop()
+
+        p.push()
+        p.rotate(45)
+        p.stroke(255)
+        p.rectMode(p.CORNER)
+        p.rect(0,40,10,75)
+        p.rect(0,40,-10,75)
+
+        p.rect(40,0,75,10)
+        p.rect(40,0,75,-10)
+
+        p.rect(0,-40,10,-75)
+        p.rect(0,-40,-10,-75)
+
+        p.rect(-40,0,-75,10)
+        p.rect(-40,0,-75,-10)
+        p.pop()
+
+      default:
+        break;
     }
     p.pop()
     p.push()
@@ -124,34 +193,102 @@ const sketch = (p: p5) => {
     // p.translate(-p.width/2,-p.height/2)
     p.translate(-p.width/3, -p.height/4)
 
-    if (index%2 == 1) {
-      p.rotate(45)
-    }
-    if (p.frameCount%60 <= 30) {
-      let a = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-      let b = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-      let c = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-      let d = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-      let e = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-      let f = p.map(Ease.quintOut(p.map(p.frameCount%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-      let g = p.map(Ease.quintInOut(p.map((p.frameCount)%30, 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-      p.fill(255);
-      p.rect(0, 0, a, a)
-      p.fill(0);
-      p.rect(0, 0, b, b)
-      p.fill(180);
-      p.rect(0, 0, c, c)
-      p.fill(255);
-      p.rect(0, 0, d, d)
-      p.fill(100);
-      p.rect(0, 0, e, e)
-      p.fill(0);
-      p.rect(0, 0, f, f)
-      p.fill(0)
-      p.rect(0, 0, g, g)
+    switch (index%4) {
+      case 0:
+      case 2:
+        p.push()
+        if (p.frameCount%bpm <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          p.fill(255);
+          p.rect(0, 0, a, a)
+          p.fill(0);
+          p.rect(0, 0, b, b)
+          p.fill(180);
+          p.rect(0, 0, c, c)
+          p.fill(255);
+          p.rect(0, 0, d, d)
+          p.fill(100);
+          p.rect(0, 0, e, e)
+          p.fill(0);
+          p.rect(0, 0, f, f)
+          p.fill(0)
+          p.rect(0, 0, g, g)
+        }
+        p.pop()
+        break;
+      case 1:
+        p.push()
+        p.rotate(45)
+        if (p.frameCount%bpm <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          p.fill(255);
+          p.rect(0, 0, a, a)
+          p.fill(0);
+          p.rect(0, 0, b, b)
+          p.fill(180);
+          p.rect(0, 0, c, c)
+          p.fill(255);
+          p.rect(0, 0, d, d)
+          p.fill(100);
+          p.rect(0, 0, e, e)
+          p.fill(0);
+          p.rect(0, 0, f, f)
+          p.fill(0)
+          p.rect(0, 0, g, g)
+        }
+        p.pop()
+        break;
+      case 3:
+        p.push()
+        p.noStroke()
+        p.rectMode(p.CORNER)
+        p.rect(0,30,10,100)
+        p.rect(0,30,-10,100)
+
+        p.rect(30,0,100,10)
+        p.rect(30,0,100,-10)
+
+        p.rect(0,-30,10,-100)
+        p.rect(0,-30,-10,-100)
+
+        p.rect(-30,0,-100,10)
+        p.rect(-30,0,-100,-10)
+        p.pop()
+
+        p.push()
+        p.rotate(45)
+        p.stroke(255)
+        p.rectMode(p.CORNER)
+        p.rect(0,40,10,75)
+        p.rect(0,40,-10,75)
+
+        p.rect(40,0,75,10)
+        p.rect(40,0,75,-10)
+
+        p.rect(0,-40,10,-75)
+        p.rect(0,-40,-10,-75)
+
+        p.rect(-40,0,-75,10)
+        p.rect(-40,0,-75,-10)
+        p.pop()
+
+      default:
+        break;
     }
     p.pop()
-    if (p.frameCount%60 == 0) {
+    if (p.frameCount%bpm == 0) {
       index++
     }
 
@@ -708,6 +845,8 @@ player.addListener({
     }
   },
   onTimerReady() {
+    bpm = Math.round(60000/player.getBeats()[5].duration)
+    console.log(bpm)
     // ↓サビ飛ばし
     player.requestMediaSeek(35000)
     // player.requestMediaSeek(239540)
