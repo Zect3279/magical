@@ -674,6 +674,9 @@ const sketch = (p: p5) => {
       if (!((-20 - noteSize/2) <= posY && posY <= (20 + noteSize/2))) {
         return
       }
+
+      ////// particlesの色を変える処理 ///////
+
       console.log(n.text)
       //TODO Miss判定 Bad判定
       if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
@@ -707,6 +710,9 @@ const sketch = (p: p5) => {
       if (!(-50 <= posY && posY <= 50)) {
         return
       }
+
+      ////// particlesの色を変える処理 ///////
+
       console.log(n.text)
       //TODO Miss判定 Bad判定
       if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
@@ -723,14 +729,6 @@ const sketch = (p: p5) => {
         n.color="rgb(256, 0, 0)" // red
       }
     })
-    // p.circle(posX(1), -20 - noteSize/2, noteSize)
-    // p.circle(posX(2), -20, noteSize)
-    // p.circle(posX(3), -20 + noteSize/2, noteSize)
-    // p.circle(posX(4), 0, noteSize)
-    // p.circle(posX(5), 20 - noteSize/2, noteSize)
-    // p.circle(posX(6), 20, noteSize)
-    // p.circle(posX(7), 20 + noteSize/2, noteSize)
-    // prevent default
     return false;
   }
 }
