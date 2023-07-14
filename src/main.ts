@@ -89,22 +89,25 @@ const sketch = (p: p5) => {
 
   function writeBackground() {
     p.push()
+    p.noStroke()
     p.translate(0,0)
     // p.translate(-p.width/2,-p.height/2)
     p.translate(p.width/3, -p.height/4)
+
+    console.log(index%4)
 
     switch (index%4) {
       case 0:
       case 2:
         p.push()
-        if (p.frameCount%bpm <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+        if (p.frameCount%(3600/bpm) <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           p.fill(255);
           p.rect(0, 0, a, a)
           p.fill(0);
@@ -123,16 +126,17 @@ const sketch = (p: p5) => {
         p.pop()
         break;
       case 1:
+      case 3:
         p.push()
         p.rotate(45)
-        if (p.frameCount%bpm <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+        if (p.frameCount%(3600/bpm) <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           p.fill(255);
           p.rect(0, 0, a, a)
           p.fill(0);
@@ -150,39 +154,40 @@ const sketch = (p: p5) => {
         }
         p.pop()
         break;
-      case 3:
-        p.push()
-        p.noStroke()
-        p.rectMode(p.CORNER)
-        p.rect(0,30,10,100)
-        p.rect(0,30,-10,100)
+      // case 3:
+      //   p.push()
+      //   p.noStroke()
+      //   p.rectMode(p.CORNER)
+      //   p.rect(0,30,10,100)
+      //   p.rect(0,30,-10,100)
 
-        p.rect(30,0,100,10)
-        p.rect(30,0,100,-10)
+      //   p.rect(30,0,100,10)
+      //   p.rect(30,0,100,-10)
 
-        p.rect(0,-30,10,-100)
-        p.rect(0,-30,-10,-100)
+      //   p.rect(0,-30,10,-100)
+      //   p.rect(0,-30,-10,-100)
 
-        p.rect(-30,0,-100,10)
-        p.rect(-30,0,-100,-10)
-        p.pop()
+      //   p.rect(-30,0,-100,10)
+      //   p.rect(-30,0,-100,-10)
+      //   p.pop()
 
-        p.push()
-        p.rotate(45)
-        p.stroke(255)
-        p.rectMode(p.CORNER)
-        p.rect(0,40,10,75)
-        p.rect(0,40,-10,75)
+      //   p.push()
+      //   p.rotate(45)
+      //   p.stroke(255)
+      //   p.rectMode(p.CORNER)
+      //   p.rect(0,40,10,75)
+      //   p.rect(0,40,-10,75)
 
-        p.rect(40,0,75,10)
-        p.rect(40,0,75,-10)
+      //   p.rect(40,0,75,10)
+      //   p.rect(40,0,75,-10)
 
-        p.rect(0,-40,10,-75)
-        p.rect(0,-40,-10,-75)
+      //   p.rect(0,-40,10,-75)
+      //   p.rect(0,-40,-10,-75)
 
-        p.rect(-40,0,-75,10)
-        p.rect(-40,0,-75,-10)
-        p.pop()
+      //   p.rect(-40,0,-75,10)
+      //   p.rect(-40,0,-75,-10)
+      //   p.pop()
+      //   break;
 
       default:
         break;
@@ -197,14 +202,14 @@ const sketch = (p: p5) => {
       case 0:
       case 2:
         p.push()
-        if (p.frameCount%bpm <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+        if (p.frameCount%(3600/bpm) <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           p.fill(255);
           p.rect(0, 0, a, a)
           p.fill(0);
@@ -223,16 +228,17 @@ const sketch = (p: p5) => {
         p.pop()
         break;
       case 1:
+      case 3:
         p.push()
         p.rotate(45)
-        if (p.frameCount%bpm <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(bpm/2), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+        if (p.frameCount%(3600/bpm) <= 30) {
+          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
+          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
+          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
+          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
+          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
+          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
+          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           p.fill(255);
           p.rect(0, 0, a, a)
           p.fill(0);
@@ -250,45 +256,47 @@ const sketch = (p: p5) => {
         }
         p.pop()
         break;
-      case 3:
-        p.push()
-        p.noStroke()
-        p.rectMode(p.CORNER)
-        p.rect(0,30,10,100)
-        p.rect(0,30,-10,100)
+      // case 3:
+      //   p.push()
+      //   p.noStroke()
+      //   p.rectMode(p.CORNER)
+      //   p.rect(0,30,10,100)
+      //   p.rect(0,30,-10,100)
 
-        p.rect(30,0,100,10)
-        p.rect(30,0,100,-10)
+      //   p.rect(30,0,100,10)
+      //   p.rect(30,0,100,-10)
 
-        p.rect(0,-30,10,-100)
-        p.rect(0,-30,-10,-100)
+      //   p.rect(0,-30,10,-100)
+      //   p.rect(0,-30,-10,-100)
 
-        p.rect(-30,0,-100,10)
-        p.rect(-30,0,-100,-10)
-        p.pop()
+      //   p.rect(-30,0,-100,10)
+      //   p.rect(-30,0,-100,-10)
+      //   p.pop()
 
-        p.push()
-        p.rotate(45)
-        p.stroke(255)
-        p.rectMode(p.CORNER)
-        p.rect(0,40,10,75)
-        p.rect(0,40,-10,75)
+      //   p.push()
+      //   p.rotate(45)
+      //   p.stroke(255)
+      //   p.rectMode(p.CORNER)
+      //   p.rect(0,40,10,75)
+      //   p.rect(0,40,-10,75)
 
-        p.rect(40,0,75,10)
-        p.rect(40,0,75,-10)
+      //   p.rect(40,0,75,10)
+      //   p.rect(40,0,75,-10)
 
-        p.rect(0,-40,10,-75)
-        p.rect(0,-40,-10,-75)
+      //   p.rect(0,-40,10,-75)
+      //   p.rect(0,-40,-10,-75)
 
-        p.rect(-40,0,-75,10)
-        p.rect(-40,0,-75,-10)
-        p.pop()
+      //   p.rect(-40,0,-75,10)
+      //   p.rect(-40,0,-75,-10)
+      //   p.pop()
+      //   break;
 
       default:
         break;
     }
     p.pop()
-    if (p.frameCount%bpm == 0) {
+    // console.log(Math.round(p.frameCount%(3600/bpm)))
+    if (Math.floor(p.frameCount%(3600/bpm)) == 0) {
       index++
     }
 
@@ -297,7 +305,9 @@ const sketch = (p: p5) => {
 
     // p.translate(p.width/2, p.height/2)
     let n = 20
-    particles.forEach(o => {
+    for (const o of particles) {
+      if (o.life > 40) { console.log(o.life); continue }
+      // console.log(o.life)
       p.push()
       p.translate(o.x, o.y)
       p.scale(0.5)
@@ -327,16 +337,20 @@ const sketch = (p: p5) => {
       }
       p.pop()
       o.life++
-    });
+
+    }
     particles.forEach(o => {
       if (o.life >= 60) {
         let x = Math.random() * ( p.width ) - p.width/2;
         let y = Math.random() * ( p.height ) - p.height/2;
+        o.life = 0
         o.x = x
         o.y = y
-        o.life = 0
+        console.log("new: "+ o.life)
       }
     })
+    // objects = objects.filter((object) => object.life > 0)
+    // particles = particles.filter((o) => o.life > 60)
     p.pop()
   }
 
@@ -356,14 +370,15 @@ const sketch = (p: p5) => {
     p.frameRate(60)
     // p.noStroke()
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 100; i++) {
       let x = Math.random() * ( p.width ) - p.width/2;
       let y = Math.random() * ( p.height ) - p.height/2;
-      let life = Math.random() * 60
+      let life = Math.floor(Math.random() * 60)
+      console.log(life)
       let div: 0 | 1
       if (i%4 === 0) {
         div = 1
-        console.log(i)
+        // console.log(i)
       }
       else { div = 0 }
       particles.push({x, y, life, div})
