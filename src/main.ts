@@ -26,6 +26,7 @@ type Particle = {
   y: number
   life: number
   div: 0 | 1
+  color?: string
 }
 
 var endLoad = false
@@ -37,6 +38,10 @@ const noteSize = 25
 let particles: Particle[] = []
 let index = 0;
 let bpm: number
+
+let windowWidth: number
+let windowHeight: number
+let notesLength: number
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -94,7 +99,7 @@ const sketch = (p: p5) => {
     // p.translate(-p.width/2,-p.height/2)
     p.translate(p.width/3, -p.height/4)
 
-    console.log(index%4)
+    // console.log(index%4)
 
     switch (index%4) {
       case 0:
@@ -305,48 +310,60 @@ const sketch = (p: p5) => {
 
     // p.translate(p.width/2, p.height/2)
     let n = 20
-    for (const o of particles) {
-      if (o.life > 40) { console.log(o.life); continue }
-      // console.log(o.life)
-      p.push()
-      p.translate(o.x, o.y)
-      p.scale(0.5)
-      if (o.div == 0) {
-        let co = p.color(255)
-        co.setAlpha(100)
-        p.fill(co)
-        let w = p.map(Ease.quintIn(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 5)
-        let h = p.map(Ease.quadOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 10)
-        p.rotate(45)
-        p.rect(0, 0, n/w, n*h)
-        p.rotate(90)
-        p.rect(0, 0, n/w, n*h)
-      } else if (o.div == 1) {
-        let one = p.map(Ease.quintOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 100)
-        let two = p.map(Ease.bounceOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 99)
-
-        let co = p.color(255)
-        co.setAlpha(100)
-        p.fill(co);
-        p.rect(0, 0, one, one)
-
-        co = p.color(0)
-        // co.setAlpha(100)
-        p.fill(co);
-        p.rect(0, 0, two, two)
-      }
-      p.pop()
-      o.life++
-
-    }
     particles.forEach(o => {
-      if (o.life >= 60) {
+      if (o.life >= notesLength) {
         let x = Math.random() * ( p.width ) - p.width/2;
         let y = Math.random() * ( p.height ) - p.height/2;
         o.life = 0
         o.x = x
         o.y = y
-        console.log("new: "+ o.life)
+        // console.log("new: "+ o.life)
+      } else if (o.life <= 30) {
+        p.push()
+        p.translate(o.x, o.y)
+        p.scale(0.5)
+        if (o.div == 0) {
+          let co: p5.Color
+          if (o.color !== undefined) {
+            co = p.color(o.color)
+          } else {
+            co = p.color(255)
+          }
+          co.setAlpha(100)
+          p.fill(co)
+          let w = p.map(Ease.quintIn(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 5)
+          let h = p.map(Ease.quadOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 10)
+          p.rotate(45)
+          p.rect(0, 0, n/w, n*h)
+          p.rotate(90)
+          p.rect(0, 0, n/w, n*h)
+        } else if (o.div == 1) {
+          if (o.color !== undefined) {
+            p.fill(o.color)
+          }
+          let one = p.map(Ease.quintOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 100)
+          let two = p.map(Ease.bounceOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 99)
+
+          let co: p5.Color
+          if (o.color !== undefined) {
+            co = p.color(o.color)
+          } else {
+            co = p.color(255)
+          }
+          co.setAlpha(100)
+          p.fill(co);
+          p.rect(0, 0, one, one)
+
+          co = p.color(0)
+          // co.setAlpha(100)
+          p.fill(co);
+          p.rect(0, 0, two, two)
+        }
+        p.pop()
+        o.life++
+      } else {
+        // console.log(o.life)
+        o.life++
       }
     })
     // objects = objects.filter((object) => object.life > 0)
@@ -369,21 +386,6 @@ const sketch = (p: p5) => {
     p.rectMode(p.CENTER)
     p.frameRate(60)
     // p.noStroke()
-
-    for (let i = 0; i < 100; i++) {
-      let x = Math.random() * ( p.width ) - p.width/2;
-      let y = Math.random() * ( p.height ) - p.height/2;
-      let life = Math.floor(Math.random() * 60)
-      console.log(life)
-      let div: 0 | 1
-      if (i%4 === 0) {
-        div = 1
-        // console.log(i)
-      }
-      else { div = 0 }
-      particles.push({x, y, life, div})
-    }
-
   }
 
   p.draw = () => {
@@ -880,6 +882,24 @@ player.addListener({
       }
       // createNotesFromBeat();
       createNotesFromLylic();
+
+      // create Particles
+      console.log(notes.length)
+      notesLength = notes.length
+      for (let i = 0; i < notesLength; i++) {
+        let x = Math.random() * ( windowWidth ) - windowWidth/2;
+        let y = Math.random() * ( windowHeight ) - windowHeight/2;
+        let life = Math.floor(Math.random() * notesLength)
+        // console.log(life)
+        let div: 0 | 1
+        if (i%4 === 0) {
+          div = 1
+          // console.log(i)
+        }
+        else { div = 0 }
+        // particles.push({x, y, life, div, color:"blue"})
+        particles.push({x, y, life, div})
+      }
 
       player.requestPlay();
       // document.removeEventListener('click', clickHandler);
