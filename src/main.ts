@@ -136,7 +136,6 @@ const sketch = (p: p5) => {
       p.fill(255)
       p.translate(0, 0, 0.1)
       p.circle(0, 0, S*0.9);
-      p.noStroke()
       p.fill(150)
       p.translate(0, 0, 0.2)
       p.circle(0, 0, S*0.75);
@@ -147,7 +146,6 @@ const sketch = (p: p5) => {
       p.fill(255)
       p.translate(0, 0, 0.4)
       p.rect(0, 0, S*1.2, S*0.2, 20);
-      p.noStroke()
 
       p.translate(0, 0, 0.5)
       p.push()
@@ -184,6 +182,7 @@ const sketch = (p: p5) => {
           default:
             break;
         }
+        p.noStroke()
         if (p.frameCount%(3600/bpm) <= 30) {
           let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
@@ -231,6 +230,7 @@ const sketch = (p: p5) => {
           default:
             break;
         }
+        p.noStroke()
         if (p.frameCount%(3600/bpm) <= 30) {
           let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
@@ -466,16 +466,21 @@ const sketch = (p: p5) => {
         if (phrase.startTime <= position && position <= phrase.endTime) {
           phraseStart = phrase.startTime
           phraseEnd = phrase.endTime
-          phraseStartPrevious = phrase.previous.startTime
-          phraseEndPrevious = phrase.previous.endTime
+          if (phrase.previous !== null) {
+            phraseStartPrevious = phrase.previous.startTime
+            phraseEndPrevious = phrase.previous.endTime
+          }
+          // console.log(phrase.previous)
         }
       }
       for (const n of notes) {
         if (phraseStart <= n.startTime && n.endTime <= phraseEnd) {
           phrases.push({"text": n.text, "color": n.color})
         }
-        if (phraseStartPrevious <= n.startTime && n.endTime <= phraseEndPrevious) {
-          phrasesPrevious.push({"text": n.text, "color": n.color})
+        if (phraseStartPrevious !== 0) {
+          if (phraseStartPrevious <= n.startTime && n.endTime <= phraseEndPrevious) {
+            phrasesPrevious.push({"text": n.text, "color": n.color})
+          }
         }
       }
 
@@ -491,7 +496,7 @@ const sketch = (p: p5) => {
           lylicBase += `${p.text}`
         }
       }
-      p.text(lylicBase, 0, -140)
+      // p.text(lylicBase, 0, -140)
       //   色を変える
       let textWidth = 0
       for (let i = 0; i < lylicBase.length; i++) {
@@ -505,7 +510,7 @@ const sketch = (p: p5) => {
             if (phrase.color !== undefined) {
               p.fill(phrase.color)
             }
-            p.text(phrase.text, currentPos, 120)
+            p.text(phrase.text, currentPos, -70)
           p.pop()
           currentPos += p.textWidth(phrase.text)
         }
@@ -536,23 +541,23 @@ const sketch = (p: p5) => {
             if (phrase.color !== undefined) {
               p.fill(phrase.color)
             }
-            p.text(phrase.text, currentPosPrevious, 70)
+            p.text(phrase.text, currentPosPrevious, -120)
           p.pop()
           currentPosPrevious += p.textWidth(phrase.text)
         }
       p.pop()
 
-      for (const s of chorus_data["repeatSegments"]) {
-        for (const r of s["repeats"]) {
-          if (r["start"] <= position && position < (r["start"] + r["duration"])) {
-            if (s["isChorus"]) {
-              p.text("サビ", 0, -230)
-            } else {
-              p.text(`${s["index"]}-${r["index"]}`, 0, -230)
-            }
-          }
-        }
-      }
+      // for (const s of chorus_data["repeatSegments"]) {
+      //   for (const r of s["repeats"]) {
+      //     if (r["start"] <= position && position < (r["start"] + r["duration"])) {
+      //       if (s["isChorus"]) {
+      //         p.text("サビ", 0, -230)
+      //       } else {
+      //         p.text(`${s["index"]}-${r["index"]}`, 0, -230)
+      //       }
+      //     }
+      //   }
+      // }
 
       p.push()
         p.stroke(255)
@@ -593,11 +598,11 @@ const sketch = (p: p5) => {
 
       p.pop()
 
-      for (const b of player.getBeats()) {
-        if (b.startTime <= position && position < b.endTime) {
-          p.text(b.index, 0, -320)
-        }
-      }
+      // for (const b of player.getBeats()) {
+      //   if (b.startTime <= position && position < b.endTime) {
+      //     p.text(b.index, 0, -320)
+      //   }
+      // }
 
     }
 
@@ -850,7 +855,7 @@ player.addListener({
     bpm = Math.round(60000/player.getBeats()[5].duration)
     console.log(bpm)
     // ↓サビ飛ばし
-    player.requestMediaSeek(35000)
+    player.requestMediaSeek(0)
     // player.requestMediaSeek(239540)
     console.log(player.data.song)
     endLoad = true
