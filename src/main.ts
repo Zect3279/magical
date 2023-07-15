@@ -159,41 +159,6 @@ const sketch = (p: p5) => {
         }
         p.pop()
         break;
-      // case 3:
-      //   p.push()
-      //   p.noStroke()
-      //   p.rectMode(p.CORNER)
-      //   p.rect(0,30,10,100)
-      //   p.rect(0,30,-10,100)
-
-      //   p.rect(30,0,100,10)
-      //   p.rect(30,0,100,-10)
-
-      //   p.rect(0,-30,10,-100)
-      //   p.rect(0,-30,-10,-100)
-
-      //   p.rect(-30,0,-100,10)
-      //   p.rect(-30,0,-100,-10)
-      //   p.pop()
-
-      //   p.push()
-      //   p.rotate(45)
-      //   p.stroke(255)
-      //   p.rectMode(p.CORNER)
-      //   p.rect(0,40,10,75)
-      //   p.rect(0,40,-10,75)
-
-      //   p.rect(40,0,75,10)
-      //   p.rect(40,0,75,-10)
-
-      //   p.rect(0,-40,10,-75)
-      //   p.rect(0,-40,-10,-75)
-
-      //   p.rect(-40,0,-75,10)
-      //   p.rect(-40,0,-75,-10)
-      //   p.pop()
-      //   break;
-
       default:
         break;
     }
@@ -261,41 +226,6 @@ const sketch = (p: p5) => {
         }
         p.pop()
         break;
-      // case 3:
-      //   p.push()
-      //   p.noStroke()
-      //   p.rectMode(p.CORNER)
-      //   p.rect(0,30,10,100)
-      //   p.rect(0,30,-10,100)
-
-      //   p.rect(30,0,100,10)
-      //   p.rect(30,0,100,-10)
-
-      //   p.rect(0,-30,10,-100)
-      //   p.rect(0,-30,-10,-100)
-
-      //   p.rect(-30,0,-100,10)
-      //   p.rect(-30,0,-100,-10)
-      //   p.pop()
-
-      //   p.push()
-      //   p.rotate(45)
-      //   p.stroke(255)
-      //   p.rectMode(p.CORNER)
-      //   p.rect(0,40,10,75)
-      //   p.rect(0,40,-10,75)
-
-      //   p.rect(40,0,75,10)
-      //   p.rect(40,0,75,-10)
-
-      //   p.rect(0,-40,10,-75)
-      //   p.rect(0,-40,-10,-75)
-
-      //   p.rect(-40,0,-75,10)
-      //   p.rect(-40,0,-75,-10)
-      //   p.pop()
-      //   break;
-
       default:
         break;
     }
@@ -360,11 +290,8 @@ const sketch = (p: p5) => {
           p.rect(0, 0, two, two)
         }
         p.pop()
-        o.life++
-      } else {
-        // console.log(o.life)
-        o.life++
       }
+      o.life++
     })
     // objects = objects.filter((object) => object.life > 0)
     // particles = particles.filter((o) => o.life > 60)
@@ -668,7 +595,7 @@ const sketch = (p: p5) => {
         break;
     }
     const position = player.timer.position
-    notes.forEach((n) => {
+    notes.forEach((n, i) => {
       if (n.xType !== keyIndex) { return }
       const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
       if (!((-20 - noteSize/2) <= posY && posY <= (20 + noteSize/2))) {
@@ -683,14 +610,17 @@ const sketch = (p: p5) => {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
+        particles[i].color = "rgb(0, 256, 0)"
       } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
+        particles[i].color = "rgb(0, 0, 256)"
       } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
+        particles[i].color = "rgb(256, 0, 0)"
       }
     })
   }
@@ -705,7 +635,7 @@ const sketch = (p: p5) => {
 
     objects.push({ x: x, y: y, life: 500 })
 
-    notes.forEach((n) => {
+    notes.forEach((n, i) => {
       const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
       if (!(-50 <= posY && posY <= 50)) {
         return
@@ -719,15 +649,22 @@ const sketch = (p: p5) => {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
+        particles[i].color = "rgb(0, 256, 0)"
+        console.log(particles[i].color)
       } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
+        particles[i].color = "rgb(0, 0, 256)"
+        console.log(particles[i].color)
       } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
+        particles[i].color = "rgb(256, 0, 0)"
+        console.log(particles[i].color)
       }
+      // console.log(particles[i].color)
     })
     return false;
   }
