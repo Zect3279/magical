@@ -845,19 +845,19 @@ function createNotesFromLylic() {
     }
   }
 }
-function createNotesFromBeat() {
-  // ビートに合わせたノート作成
-  for (const b of player.getBeats()) {
-    notes.push({
-      "id": Number(new Date().getTime().toString().slice(-7)),
-      "startTime": b.startTime,
-      "endTime": b.endTime,
-      "ppos": b.startTime,
-      "z": -1000,
-      "xType": getRandomLylicX(b.startTime),
-    })
-  }
-}
+//  function createNotesFromBeat() {
+//    // ビートに合わせたノート作成
+//    for (const b of player.getBeats()) {
+//      notes.push({
+//        "id": Number(new Date().getTime().toString().slice(-7)),
+//        "startTime": b.startTime,
+//        "endTime": b.endTime,
+//        "ppos": b.startTime,
+//        "z": -1000,
+//        "xType": getRandomLylicX(b.startTime),
+//      })
+//    }
+//  }
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
