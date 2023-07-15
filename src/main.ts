@@ -46,65 +46,71 @@ let notesLength: number
 const sketch = (p: p5) => {
   let font: p5.Font
   let objects: CirclePose[] = []
+  let co: p5.Color
 
   function writeNotes(x: number, y: number, width: number) {
     p.push()
-    const posX = (i: number) => p.map(i, 0, 8, -width*0.9/2, width*0.9/2)
+      const posX = (i: number) => p.map(i, 0, 8, -width*0.9/2, width*0.9/2)
 
 
-    const S = posX(5) - posX(4)
-    // console.log(S)
-    p.noStroke()
-    // p.stroke(0)
-    p.translate(x, y)
+      const S = posX(5) - posX(4)
+      // console.log(S)
+      p.noStroke()
+      // p.stroke(0)
+      p.translate(x, y)
 
-    // p.scale(2)
-    p.fill(255)
-    p.translate(0, 0, 0.1)
-    p.circle(0, 0, S*0.9);
-    p.noStroke()
-    p.fill(150)
-    p.translate(0, 0, 0.2)
-    p.circle(0, 0, S*0.75);
-    p.fill(50)
-    p.translate(0, 0, 0.3)
-    p.circle(0, 0, S*0.5);
-    p.stroke(0)
-    p.fill(255)
-    p.translate(0, 0, 0.4)
-    p.rect(0, 0, S*1.2, S*0.2, 20);
-    p.noStroke()
+      // p.scale(2)
+      p.fill(255)
+      p.translate(0, 0, 0.1)
+      p.circle(0, 0, S*0.9);
+      p.noStroke()
+      p.fill(150)
+      p.translate(0, 0, 0.2)
+      p.circle(0, 0, S*0.75);
+      p.fill(50)
+      p.translate(0, 0, 0.3)
+      p.circle(0, 0, S*0.5);
+      p.stroke(0)
+      p.fill(255)
+      p.translate(0, 0, 0.4)
+      p.rect(0, 0, S*1.2, S*0.2, 20);
+      p.noStroke()
 
-    p.translate(0, 0, 0.5)
-    p.push()
-    p.fill(50)
-    p.beginShape();
-      p.vertex(-S*0.025, S*0.025);
-      p.vertex(0, S*0.0875);
-      p.vertex(S*0.025, S*0.025);
-      p.vertex(S*0.0875, 0);
-      p.vertex(S*0.025, -S*0.02);
-      p.vertex(0, -S*0.0875);
-      p.vertex(-S*0.025, -S*0.02);
-      p.vertex(-S*0.0875, 0);
-    p.endShape();
-    p.pop()
+      p.translate(0, 0, 0.5)
+      p.push()
+        p.fill(50)
+        p.beginShape();
+          p.vertex(-S*0.025, S*0.025);
+          p.vertex(0, S*0.0875);
+          p.vertex(S*0.025, S*0.025);
+          p.vertex(S*0.0875, 0);
+          p.vertex(S*0.025, -S*0.02);
+          p.vertex(0, -S*0.0875);
+          p.vertex(-S*0.025, -S*0.02);
+          p.vertex(-S*0.0875, 0);
+        p.endShape();
+      p.pop()
     p.pop()
   }
 
   function writeBackground() {
     p.push()
-    p.noStroke()
-    p.translate(0,0)
-    // p.translate(-p.width/2,-p.height/2)
-    p.translate(p.width/3, -p.height/4)
+      p.noStroke()
+      p.translate(0,0)
+      // p.translate(-p.width/2,-p.height/2)
+      p.translate(p.width/3, -p.height/4)
 
-    // console.log(index%4)
+      // console.log(index%4)
 
-    switch (index%4) {
-      case 0:
-      case 2:
-        p.push()
+      p.push()
+        switch (index%4) {
+          case 1:
+          case 3:
+            p.rotate(45)
+            break;
+          default:
+            break;
+        }
         if (p.frameCount%(3600/bpm) <= 30) {
           let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
@@ -113,65 +119,45 @@ const sketch = (p: p5) => {
           let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
           let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
           let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          p.fill(255);
+          co = p.color(255)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, a, a)
           p.fill(0);
           p.rect(0, 0, b, b)
-          p.fill(180);
+          co = p.color(180)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, c, c)
-          p.fill(255);
+          co = p.color(255)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, d, d)
-          p.fill(100);
+          co = p.color(100)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, e, e)
           p.fill(0);
           p.rect(0, 0, f, f)
           p.fill(0)
           p.rect(0, 0, g, g)
         }
-        p.pop()
-        break;
-      case 1:
-      case 3:
-        p.push()
-        p.rotate(45)
-        if (p.frameCount%(3600/bpm) <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          p.fill(255);
-          p.rect(0, 0, a, a)
-          p.fill(0);
-          p.rect(0, 0, b, b)
-          p.fill(180);
-          p.rect(0, 0, c, c)
-          p.fill(255);
-          p.rect(0, 0, d, d)
-          p.fill(100);
-          p.rect(0, 0, e, e)
-          p.fill(0);
-          p.rect(0, 0, f, f)
-          p.fill(0)
-          p.rect(0, 0, g, g)
-        }
-        p.pop()
-        break;
-      default:
-        break;
-    }
+      p.pop()
     p.pop()
     p.push()
-    p.translate(0,0)
-    // p.translate(-p.width/2,-p.height/2)
-    p.translate(-p.width/3, -p.height/4)
+      p.translate(0,0)
+      // p.translate(-p.width/2,-p.height/2)
+      p.translate(-p.width/3, -p.height/4)
 
-    switch (index%4) {
-      case 0:
-      case 2:
-        p.push()
+      p.push()
+        switch (index%4) {
+          case 1:
+          case 3:
+            p.rotate(45)
+            break;
+          default:
+            break;
+        }
         if (p.frameCount%(3600/bpm) <= 30) {
           let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
           let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
@@ -180,55 +166,30 @@ const sketch = (p: p5) => {
           let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
           let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
           let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          p.fill(255);
+          co = p.color(255)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, a, a)
           p.fill(0);
           p.rect(0, 0, b, b)
-          p.fill(180);
+          co = p.color(180)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, c, c)
-          p.fill(255);
+          co = p.color(255)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, d, d)
-          p.fill(100);
+          co = p.color(100)
+          co.setAlpha(200)
+          p.fill(co)
           p.rect(0, 0, e, e)
           p.fill(0);
           p.rect(0, 0, f, f)
           p.fill(0)
           p.rect(0, 0, g, g)
         }
-        p.pop()
-        break;
-      case 1:
-      case 3:
-        p.push()
-        p.rotate(45)
-        if (p.frameCount%(3600/bpm) <= 30) {
-          let a = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          let b = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.8)
-          let c = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.45)
-          let d = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.3)
-          let e = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.2)
-          let f = p.map(Ease.quintOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25*0.1)
-          let g = p.map(Ease.quintInOut(p.map(p.frameCount%(3600/bpm), 0, 30, 0, 1)), 0, 1, 0, p.width*0.25)
-          p.fill(255);
-          p.rect(0, 0, a, a)
-          p.fill(0);
-          p.rect(0, 0, b, b)
-          p.fill(180);
-          p.rect(0, 0, c, c)
-          p.fill(255);
-          p.rect(0, 0, d, d)
-          p.fill(100);
-          p.rect(0, 0, e, e)
-          p.fill(0);
-          p.rect(0, 0, f, f)
-          p.fill(0)
-          p.rect(0, 0, g, g)
-        }
-        p.pop()
-        break;
-      default:
-        break;
-    }
+      p.pop()
     p.pop()
     // console.log(Math.round(p.frameCount%(3600/bpm)))
     if (Math.floor(p.frameCount%(3600/bpm)) == 0) {
@@ -236,65 +197,64 @@ const sketch = (p: p5) => {
     }
 
     p.push()
-    p.noStroke()
+      p.noStroke()
 
-    // p.translate(p.width/2, p.height/2)
-    let n = 20
-    particles.forEach(o => {
-      if (o.life >= notesLength) {
-        let x = Math.random() * ( p.width ) - p.width/2;
-        let y = Math.random() * ( p.height ) - p.height/2;
-        o.life = 0
-        o.x = x
-        o.y = y
-        // console.log("new: "+ o.life)
-      } else if (o.life <= 30) {
-        p.push()
-        p.translate(o.x, o.y)
-        p.scale(0.5)
-        if (o.div == 0) {
-          let co: p5.Color
-          if (o.color !== undefined) {
-            co = p.color(o.color)
-          } else {
-            co = p.color(255)
-          }
-          co.setAlpha(100)
-          p.fill(co)
-          let w = p.map(Ease.quintIn(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 5)
-          let h = p.map(Ease.quadOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 10)
-          p.rotate(45)
-          p.rect(0, 0, n/w, n*h)
-          p.rotate(90)
-          p.rect(0, 0, n/w, n*h)
-        } else if (o.div == 1) {
-          if (o.color !== undefined) {
-            p.fill(o.color)
-          }
-          let one = p.map(Ease.quintOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 100)
-          let two = p.map(Ease.bounceOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 99)
+      // p.translate(p.width/2, p.height/2)
+      let n = 20
+      particles.forEach(o => {
+        if (o.life >= (notesLength)) {
+          let x = Math.random() * ( p.width ) - p.width/2;
+          let y = Math.random() * ( p.height ) - p.height/2;
+          o.life = 0
+          o.x = x
+          o.y = y
+          // console.log("new: "+ o.life)
+        } else if (o.life <= 30) {
+          p.push()
+            p.translate(o.x, o.y)
+            p.scale(0.5)
+            if (o.div == 0) {
+              if (o.color !== undefined) {
+                co = p.color(o.color)
+              } else {
+                co = p.color(255)
+              }
+              co.setAlpha(100)
+              p.fill(co)
+              let w = p.map(Ease.quintIn(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 5)
+              let h = p.map(Ease.quadOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 1, 10)
+              p.rotate(45)
+              p.rect(0, 0, n/w, n*h)
+              p.rotate(90)
+              p.rect(0, 0, n/w, n*h)
+            } else if (o.div == 1) {
+              if (o.color !== undefined) {
+                p.fill(o.color)
+              }
+              let one = p.map(Ease.quintOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 100)
+              let two = p.map(Ease.bounceOut(p.map(o.life%30, 0, 30, 0, 1)), 0, 1, 0, 99)
 
-          let co: p5.Color
-          if (o.color !== undefined) {
-            co = p.color(o.color)
-          } else {
-            co = p.color(255)
-          }
-          co.setAlpha(100)
-          p.fill(co);
-          p.rect(0, 0, one, one)
+              let co: p5.Color
+              if (o.color !== undefined) {
+                co = p.color(o.color)
+              } else {
+                co = p.color(255)
+              }
+              co.setAlpha(100)
+              p.fill(co);
+              p.rect(0, 0, one, one)
 
-          co = p.color(0)
-          // co.setAlpha(100)
-          p.fill(co);
-          p.rect(0, 0, two, two)
+              co = p.color(0)
+              // co.setAlpha(100)
+              p.fill(co);
+              p.rect(0, 0, two, two)
+            }
+          p.pop()
         }
-        p.pop()
-      }
-      o.life++
-    })
-    // objects = objects.filter((object) => object.life > 0)
-    // particles = particles.filter((o) => o.life > 60)
+        o.life++
+      })
+      // objects = objects.filter((object) => object.life > 0)
+      // particles = particles.filter((o) => o.life > 60)
     p.pop()
   }
 
@@ -316,21 +276,12 @@ const sketch = (p: p5) => {
   }
 
   p.draw = () => {
-    // let pg = p.createGraphics(p.width, p.height)
-    // pg.textFont(font)
-    // pg.textAlign(p.CENTER, p.CENTER)
-    // pg.textSize(50)
-    // pg.angleMode(p.DEGREES)
-    // pg.rectMode(p.CENTER)
-    // pg.frameRate(60)
-    // // pg.noStroke()
     const centerY = p.height * 0.6 / 2
-    // p.translate(p.width/2, p.height/2)
     if (endLoad && !player.isPlaying) {
       p.background(50)
       p.textSize(50)
 
-      writeBackground()
+      // writeBackground()
 
       p.fill(255)
       p.text(player.data.song.name, 0, -20)
@@ -341,54 +292,32 @@ const sketch = (p: p5) => {
 
       p.push()
 
-      p.translate(0, centerY)
-      p.rotateX(60)
-      // p.translate(0,0)
+        p.translate(0, centerY)
+        p.rotateX(60)
+        // p.translate(0,0)
 
-      const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
+        const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
-      for (let i = 0; i <= 8; i++) {
-        p.line(posX(i), -p.height*2, posX(i), p.height/2)
-      }
+        for (let i = 0; i <= 8; i++) {
+          p.line(posX(i), -p.height*2, posX(i), p.height/2)
+        }
 
-      p.line(-p.width/2, -20, p.width/2, -20)
-      // p.line(-p.width/2, 0, p.width/2, 0)
-      p.line(-p.width/2, 20, p.width/2, 20)
+        p.line(-p.width/2, -20, p.width/2, -20)
+        p.line(-p.width/2, 20, p.width/2, 20)
 
-      p.circle(posX(1), -20 - noteSize/2, noteSize)
-      p.circle(posX(2), -20, noteSize)
-      p.circle(posX(3), -20 + noteSize/2, noteSize)
-      // p.circle(posX(4), 0, noteSize)
-      writeNotes(posX(4), 0, p.width)
-      p.circle(posX(5), 20 - noteSize/2, noteSize)
-      p.circle(posX(6), 20, noteSize)
-      p.circle(posX(7), 20 + noteSize/2, noteSize)
+        writeNotes(posX(4), 0, p.width)
+        const S = posX(5) - posX(4)
+        p.fill(255)
+        p.textSize(S*0.5)
+        p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
+        p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
+        p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
+        p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
+        p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
+        p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
+        p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
+        p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
 
-      const S = posX(5) - posX(4)
-      p.fill(255)
-      p.textSize(S*0.5)
-      p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
-      p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
-      p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
-      p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
-      p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
-      p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
-      p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
-      p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
-
-      // p.push();
-      // p.noLoop();
-      // p.textSize(50)
-      // p.fill(100,100);
-      // p.stroke(100);
-      // p.strokeWeight(3);
-      // p.strokeJoin(p.BEVEL);
-      // p.drawingContext.setLineDash([1,5]);
-      // p.strokeCap(p.PROJECT);
-      // p.textStyle(p.BOLDITALIC);
-      // p.text("S", 0, 0);
-      // p.pop();
-      //
       p.pop()
       // p.image(pg, 0, 0)
 
@@ -442,17 +371,17 @@ const sketch = (p: p5) => {
         textWidth += p.textWidth(lylicBase[i])
       }
       p.push()
-      p.textAlign(p.LEFT)
-      let currentPos = -textWidth/2
-      for (const phrase of phrases) {
-        p.push()
-        if (phrase.color !== undefined) {
-          p.fill(phrase.color)
+        p.textAlign(p.LEFT)
+        let currentPos = -textWidth/2
+        for (const phrase of phrases) {
+          p.push()
+            if (phrase.color !== undefined) {
+              p.fill(phrase.color)
+            }
+            p.text(phrase.text, currentPos, 120)
+          p.pop()
+          currentPos += p.textWidth(phrase.text)
         }
-        p.text(phrase.text, currentPos, 120)
-        p.pop()
-        currentPos += p.textWidth(phrase.text)
-      }
       p.pop()
 
       // 前の歌詞
@@ -473,17 +402,17 @@ const sketch = (p: p5) => {
         textWidthPrevious += p.textWidth(lylicBasePrevious[i])
       }
       p.push()
-      p.textAlign(p.LEFT)
-      let currentPosPrevious = -textWidthPrevious/2
-      for (const phrase of phrasesPrevious) {
-        p.push()
-        if (phrase.color !== undefined) {
-          p.fill(phrase.color)
+        p.textAlign(p.LEFT)
+        let currentPosPrevious = -textWidthPrevious/2
+        for (const phrase of phrasesPrevious) {
+          p.push()
+            if (phrase.color !== undefined) {
+              p.fill(phrase.color)
+            }
+            p.text(phrase.text, currentPosPrevious, 70)
+          p.pop()
+          currentPosPrevious += p.textWidth(phrase.text)
         }
-        p.text(phrase.text, currentPosPrevious, 70)
-        p.pop()
-        currentPosPrevious += p.textWidth(phrase.text)
-      }
       p.pop()
 
       for (const s of chorus_data["repeatSegments"]) {
@@ -499,45 +428,43 @@ const sketch = (p: p5) => {
       }
 
       p.push()
-      p.stroke(255)
+        p.stroke(255)
 
-      p.translate(0, centerY)
-      p.rotateX(60)
-      // p.translate(0,0)
+        p.translate(0, centerY)
+        p.rotateX(60)
+        // p.translate(0,0)
 
-      const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
+        const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
-      for (let i = 0; i <= 8; i++) {
-        p.line(posX(i), -p.height*2, posX(i), p.height/2)
-      }
-
-      p.line(-p.width/2, -20, p.width/2, -20)
-      // p.line(-p.width/2, 0, p.width/2, 0)
-      p.line(-p.width/2, 20, p.width/2, 20)
-
-      const S = posX(5) - posX(4)
-      p.fill(255)
-      p.textSize(S*0.5)
-      p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
-      p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
-      p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
-      p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
-      p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
-      p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
-      p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
-      p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
-
-      notes.forEach((n: NotesObj) => {
-        if (n.NstartTime <= position && position <= n.NendTime) {
-          if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
-          const posY
-          = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
-          // p.circle(posX(n.xType+0.5), posY, noteSize)
-          writeNotes(posX(n.xType+0.5), posY, p.width)
+        for (let i = 0; i <= 8; i++) {
+          p.line(posX(i), -p.height*2, posX(i), p.height/2)
         }
-      })
 
-      //
+        p.line(-p.width/2, -20, p.width/2, -20)
+        // p.line(-p.width/2, 0, p.width/2, 0)
+        p.line(-p.width/2, 20, p.width/2, 20)
+
+        const S = posX(5) - posX(4)
+        p.fill(255)
+        p.textSize(S*0.5)
+        p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
+        p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
+        p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
+        p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
+        p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
+        p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
+        p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
+        p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
+
+        notes.forEach((n: NotesObj) => {
+          if (n.NstartTime <= position && position <= n.NendTime) {
+            if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
+            const posY
+            = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
+            writeNotes(posX(n.xType+0.5), posY, p.width)
+          }
+        })
+
       p.pop()
 
       for (const b of player.getBeats()) {
@@ -598,7 +525,7 @@ const sketch = (p: p5) => {
     notes.forEach((n, i) => {
       if (n.xType !== keyIndex) { return }
       const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
-      if (!((-20 - noteSize/2) <= posY && posY <= (20 + noteSize/2))) {
+      if (!((-20 - noteSize/2)*1.5 <= posY && posY <= (20 + noteSize/2)*1.5)) {
         return
       }
 
@@ -606,17 +533,17 @@ const sketch = (p: p5) => {
 
       console.log(n.text)
       //TODO Miss判定 Bad判定
-      if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
+      if (((-20 - noteSize/2)*1.5 <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2)*1.5)) {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
         particles[i].color = "rgb(0, 256, 0)"
-      } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
+      } else if ((-20*1.5 <= posY && posY < (-20 + noteSize/2)*1.5) || ((20 - noteSize/2)*1.5 < posY && posY <= 20*1.5)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
         particles[i].color = "rgb(0, 0, 256)"
-      } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
+      } else if ((-20 + noteSize/2)*1.5 <= posY && posY <= (20 - noteSize/2)*1.5) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
@@ -645,24 +572,21 @@ const sketch = (p: p5) => {
 
       console.log(n.text)
       //TODO Miss判定 Bad判定
-      if (((-20 - noteSize/2) <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2))) {
+      if (((-20 - noteSize/2)*1.5 <= posY && posY < -20) || (20 < posY && posY <= (20 + noteSize/2)*1.5)) {
         // Good判定
         console.log("good")
         n.color="rgb(0, 256, 0)" // green
         particles[i].color = "rgb(0, 256, 0)"
-        console.log(particles[i].color)
-      } else if ((-20 <= posY && posY < (-20 + noteSize/2)) || ((20 - noteSize/2) < posY && posY <= 20)) {
+      } else if ((-20*1.5 <= posY && posY < (-20 + noteSize/2)*1.5) || ((20 - noteSize/2)*1.5 < posY && posY <= 20*1.5)) {
         // Great判定
         console.log("great")
         n.color="rgb(0, 0, 256)" // blue
         particles[i].color = "rgb(0, 0, 256)"
-        console.log(particles[i].color)
-      } else if ((-20 + noteSize/2) <= posY && posY <= (20 - noteSize/2)) {
+      } else if ((-20 + noteSize/2)*1.5 <= posY && posY <= (20 - noteSize/2)*1.5) {
         // Perfect判定
         console.log("perfect")
         n.color="rgb(256, 0, 0)" // red
         particles[i].color = "rgb(256, 0, 0)"
-        console.log(particles[i].color)
       }
       // console.log(particles[i].color)
     })
