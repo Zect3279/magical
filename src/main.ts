@@ -1,5 +1,6 @@
 import p5 from 'p5'
 import { Player, Ease } from "textalive-app-api";
+import { Pane } from 'tweakpane';
 
 import observe from "./util/utils"
 
@@ -33,7 +34,9 @@ var endLoad = false
 const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 let notes: NotesObj[] = []
-const noteSpeed = 2
+const PARAMS = {
+  noteSpeed: 2
+}
 const noteSize = 25
 let particles: Particle[] = []
 let index = 0;
@@ -42,6 +45,76 @@ let bpm: number
 let windowWidth: number
 let windowHeight: number
 let notesLength: number
+
+let helpFlag: boolean = false
+let helpPos: number = 37575
+
+const pane = new Pane();
+const tab = pane.addTab({
+  pages: [
+    {title: 'Main'},
+    {title: 'Sub'},
+  ],
+});
+const btnHELP = tab.pages[1].addButton({
+  title: "遊び方"
+})
+const btnHELPend = tab.pages[1].addButton({
+  title: "終了",
+  hidden: true
+})
+const btn1 = tab.pages[0].addButton({
+  title: 'ゲーム開始'
+});
+tab.pages[1].addInput(PARAMS, 'noteSpeed', {
+  label: "落下秒数",
+  min: 1,
+  max: 5,
+  value: 2,
+  step: 0.1
+})
+btnHELP.on('click', () => {
+  helpFlag = true
+  btnHELP.hidden = !btnHELP.hidden
+  btnHELPend.hidden = !btnHELPend.hidden
+})
+btnHELPend.on('click', () => {
+  helpFlag = false
+  btnHELP.hidden = !btnHELP.hidden
+  btnHELPend.hidden = !btnHELPend.hidden
+})
+btn1.on('click', () => {
+  // btn1.disabled = !btn1.disabled
+  helpFlag = false
+  pane.hidden = !pane.hidden
+  if (player.isPlaying) {
+    return
+  }
+  notes = []
+  // createNotesFromBeat();
+  createNotesFromLylic();
+
+  // create Particles
+  console.log(notes.length)
+  notesLength = notes.length
+  for (let i = 0; i < notesLength; i++) {
+    let x = Math.random() * ( windowWidth ) - windowWidth/2;
+    let y = Math.random() * ( windowHeight ) - windowHeight/2;
+    let life = Math.floor(Math.random() * notesLength)
+    // console.log(life)
+    let div: 0 | 1
+    if (i%4 === 0) {
+      div = 1
+      // console.log(i)
+    }
+    else { div = 0 }
+    // particles.push({x, y, life, div, color:"blue"})
+    particles.push({x, y, life, div})
+  }
+
+  player.requestPlay();
+  // document.removeEventListener('click', clickHandler);
+});
 
 const sketch = (p: p5) => {
   let font: p5.Font
@@ -277,7 +350,61 @@ const sketch = (p: p5) => {
 
   p.draw = () => {
     const centerY = p.height * 0.6 / 2
-    if (endLoad && !player.isPlaying) {
+    if (helpFlag == true) {
+      p.background(0)
+      p.textSize(50)
+      p.fill(255)
+      p.stroke(255)
+
+      p.push()
+
+        p.translate(0, centerY)
+        p.rotateX(60)
+        // p.translate(0,0)
+
+        const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
+
+        for (let i = 0; i <= 8; i++) {
+          p.line(posX(i), -p.height*2, posX(i), p.height/2)
+        }
+
+        p.line(-p.width/2, -20, p.width/2, -20)
+        p.line(-p.width/2, 20, p.width/2, 20)
+
+        const S = posX(5) - posX(4)
+        p.fill(255)
+        p.textSize(S*0.5)
+        p.text('S', posX(0.5), font.textBounds('S', 0, 0).h)
+        p.text('D', posX(1.5), font.textBounds('D', 0, 0).h)
+        p.text('F', posX(2.5), font.textBounds('F', 0, 0).h)
+        p.text('G', posX(3.5), font.textBounds('G', 0, 0).h)
+        p.text('H', posX(4.5), font.textBounds('H', 0, 0).h)
+        p.text('J', posX(5.5), font.textBounds('J', 0, 0).h)
+        p.text('K', posX(6.5), font.textBounds('K', 0, 0).h)
+        p.text('L', posX(7.5), font.textBounds('L', 0, 0).h)
+
+        helpPos += 10
+        notes.forEach((n: NotesObj) => {
+          if (n.NstartTime <= helpPos && helpPos <= n.NendTime) {
+            // if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
+            const posY = p.map(helpPos, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
+            writeNotes(posX(n.xType+0.5), posY, p.width)
+          }
+        })
+      p.pop()
+      p.textSize(30)
+      p.text('ノーツが上から落ちてきます', 0, (-p.height/2)*0.5)
+      p.text('下の二重線の間に', 0, (-p.height/2)*0.3)
+      p.text('ノーツが来たらkeyを押します', 0, (-p.height/2)*0.3+35)
+
+      p.text('判定は', 0, 20)
+      p.text('緑 : Good', 0, 60)
+      p.text('青 : Great', 0, 100)
+      p.text('赤 : Perfect', 0, 140)
+
+      p.textSize(15)
+      p.text('（クリックは座標無関係）', 0, -20)
+    } else if (endLoad && !player.isPlaying) {
       p.background(50)
       p.textSize(50)
 
@@ -288,7 +415,7 @@ const sketch = (p: p5) => {
       p.textSize(30)
       p.text(`by ${player.data.song.artist.name}`, 0, 40)
       p.textSize(20)
-      p.text("画面をクリックして開始", 0, 120)
+      p.text("画面右上から開始", 0, 120)
 
       p.push()
 
@@ -459,8 +586,7 @@ const sketch = (p: p5) => {
         notes.forEach((n: NotesObj) => {
           if (n.NstartTime <= position && position <= n.NendTime) {
             if (n.ppos-10 <= position && position <= n.ppos+10) { console.log(n.text) }
-            const posY
-            = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
+            const posY = p.map(position, n.NstartTime, n.NendTime, -p.height*2, p.height*2)
             writeNotes(posX(n.xType+0.5), posY, p.width)
           }
         })
@@ -643,11 +769,11 @@ function createNotesFromLylic() {
 
   const beats: number[] = []
   player.getBeats().forEach((b) => { beats.push(b.startTime) })
-  console.log(beats.slice(0,5))
-  console.log(beats.length)
+  // console.log(beats.slice(0,5))
+  // console.log(beats.length)
   const halfBeats = divideList(beats)
-  console.log(halfBeats.slice(0,5))
-  console.log(halfBeats.length)
+  // console.log(halfBeats.slice(0,5))
+  // console.log(halfBeats.length)
 
   for (const phrase of player.video.phrases) {
     for (const word of phrase.children) {
@@ -655,15 +781,15 @@ function createNotesFromLylic() {
         for (const char of word.children) {
           // const startTime: number = quantizeValue(char.startTime, beats)
           const startTime: number = quantizeValue(char.startTime, halfBeats)
-          console.log(startTime)
+          // console.log(startTime)
           // const startTime = char.startTime
           notes.push({
             "id": Number(new Date().getTime().toString().slice(-7)),
             "text": char.text,
             "startTime": char.startTime,
             "endTime": char.endTime,
-            "NstartTime": startTime - 1000*noteSpeed,
-            "NendTime": startTime + 1000*noteSpeed,
+            "NstartTime": startTime - 1000*PARAMS.noteSpeed,
+            "NendTime": startTime + 1000*PARAMS.noteSpeed,
             "ppos": startTime,
             "z": -1000,
             "xType": getRandomLylicX(startTime),
@@ -679,8 +805,8 @@ function createNotesFromLylic() {
           "text": word.text,
           "startTime": word.startTime,
           "endTime": word.endTime,
-          "NstartTime": startTime - 1000*noteSpeed,
-          "NendTime": startTime + 1000*noteSpeed,
+          "NstartTime": startTime - 1000*PARAMS.noteSpeed,
+          "NendTime": startTime + 1000*PARAMS.noteSpeed,
           "ppos": startTime,
           "z": -1000,
           "xType": getRandomLylicX(startTime),
@@ -735,35 +861,8 @@ player.addListener({
       .then(response => response.json())
       .then(data => chorus_data = data)
     // console.log(chorus_data)
-    function clickHandler(event: MouseEvent) {
-      if (player.isPlaying) {
-        return
-      }
-      // createNotesFromBeat();
-      createNotesFromLylic();
-
-      // create Particles
-      console.log(notes.length)
-      notesLength = notes.length
-      for (let i = 0; i < notesLength; i++) {
-        let x = Math.random() * ( windowWidth ) - windowWidth/2;
-        let y = Math.random() * ( windowHeight ) - windowHeight/2;
-        let life = Math.floor(Math.random() * notesLength)
-        // console.log(life)
-        let div: 0 | 1
-        if (i%4 === 0) {
-          div = 1
-          // console.log(i)
-        }
-        else { div = 0 }
-        // particles.push({x, y, life, div, color:"blue"})
-        particles.push({x, y, life, div})
-      }
-
-      player.requestPlay();
-      // document.removeEventListener('click', clickHandler);
-    }
-    document.addEventListener('click', clickHandler);
+    createNotesFromLylic();
+    console.log(notes.length)
   },
   onDispose() {
       console.log("end from dispose")
