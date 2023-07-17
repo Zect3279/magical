@@ -35,7 +35,9 @@ const SONG_URL = "https://piapro.jp/t/ucgN/20230110005414"
 var chorus_data:any;
 let notes: NotesObj[] = []
 const PARAMS = {
-  noteSpeed: 2
+  noteSpeed: 2,
+  song: "king妃jack躍",
+  quality: 0,
 }
 const noteSize = 25
 let particles: Particle[] = []
@@ -48,6 +50,117 @@ let notesLength: number
 
 let helpFlag: boolean = false
 let helpPos: number = 37575
+
+let choosing = true
+
+const chooseSong = new Pane();
+chooseSong.addInput(PARAMS, 'song', {
+  options: {
+    "king妃jack躍": "king妃jack躍",
+    "生きること": "生きること",
+    "唱明者": "唱明者",
+    "ネオンライトの海を往く": "ネオンライトの海を往く",
+    "ミュウテイション": "ミュウテイション",
+    "Entrust via 39": "Entrust via 39"
+  },
+});
+const chosenInput = chooseSong.addButton({
+  title: "完了"
+})
+chosenInput.on('click', () => {
+  chooseSong.hidden = !chooseSong.hidden
+  choosing = false
+
+  switch (PARAMS.song) {
+    case "king妃jack躍":
+      // king妃jack躍 / 宮守文学 feat. 初音ミク
+      player.createFromSongUrl("https://piapro.jp/t/ucgN/20230110005414", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427948/history
+          beatId: 4267297,
+          chordId: 2405019,
+          repetitiveSegmentId: 2475577 /* 5月6日更新 */,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FucgN%2F20230110005414
+          lyricId: 56092,
+          lyricDiffId: 9636
+        },
+      });
+      break;
+    case "生きること":
+      // 生きること / nogumi feat. 初音ミク
+      player.createFromSongUrl("https://piapro.jp/t/fnhJ/20230131212038", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427949/history
+          beatId: 4267300,
+          chordId: 2405033,
+          repetitiveSegmentId: 2475606,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FfnhJ%2F20230131212038
+          lyricId: 56131,
+          lyricDiffId: 9638
+        },
+      });
+    break;
+    case "唱明者":
+      // 唱明者 / すこやか大聖堂 feat. KAITO
+      player.createFromSongUrl("https://piapro.jp/t/Vfrl/20230120182855", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427950/history
+          beatId: 4267334,
+          chordId: 2405059,
+          repetitiveSegmentId: 2475645,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FVfrl%2F20230120182855
+          lyricId: 56095,
+          lyricDiffId: 9637
+        },
+      });
+    break;
+    case "ネオンライトの海を往く":
+      // ネオンライトの海を往く / Ponchi♪ feat. 初音ミク
+      player.createFromSongUrl("https://piapro.jp/t/fyxI/20230203003935", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427951/history
+          beatId: 4267373,
+          chordId: 2405138,
+          repetitiveSegmentId: 2475664,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FfyxI%2F20230203003935
+          lyricId: 56096,
+          lyricDiffId: 9639
+        },
+      });
+    break;
+    case "ミュウテイション":
+      // ミュウテイション / Rin（Kuroneko Lounge） feat. 初音ミク
+      player.createFromSongUrl("https://piapro.jp/t/Wk83/20230203141007", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427952/history
+          beatId: 4267381,
+          chordId: 2405285,
+          repetitiveSegmentId: 2475676,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FWk83%2F20230203141007
+          lyricId: 56812 /* 6月27日更新 */,
+          lyricDiffId: 10668 /* 6月27日更新 */
+        },
+      });
+    break;
+    case "Entrust via 39":
+      // Entrust via 39 / ikomai feat. 初音ミク
+      player.createFromSongUrl("https://piapro.jp/t/Ya0_/20230201235034", {
+        video: {
+          // 音楽地図訂正履歴: https://songle.jp/songs/2427953/history
+          beatId: 4269734,
+          chordId: 2405723,
+          repetitiveSegmentId: 2475686,
+          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FYa0_%2F20230201235034
+          lyricId: 56098,
+          lyricDiffId: 9643
+        },
+      });
+    break;
+
+    default:
+      break;
+  }
+})
 
 const pane = new Pane();
 const tab = pane.addTab({
@@ -350,7 +463,28 @@ const sketch = (p: p5) => {
 
   p.draw = () => {
     const centerY = p.height * 0.6 / 2
-    if (helpFlag == true) {
+    if (choosing == true) {
+
+      p.background(50)
+      p.textSize(50)
+
+      // writeBackground()
+
+      p.fill(255)
+      p.textSize(20)
+      p.text("画面右上から楽曲を選択", 0, 0)
+    } else if (choosing == false && endLoad == false) {
+      p.background(50)
+      p.textSize(50)
+
+      // writeBackground()
+
+      p.fill(255)
+      p.textSize(20)
+      p.text("楽曲データを読み込み中...", 0, 0)
+      p.text("いくら待っても画面が切り替わらない場合は", 0, 40)
+      p.text("ページのリロードをしてください", 0, 60)
+    } else if (helpFlag == true) {
       p.background(0)
       p.textSize(50)
       p.fill(255)
@@ -424,6 +558,7 @@ const sketch = (p: p5) => {
       p.text(`by ${player.data.song.artist.name}`, 0, 40)
       p.textSize(20)
       p.text("画面右上から開始", 0, 120)
+      p.text("リロードでRestart", 0, 150)
 
       p.push()
 
@@ -861,21 +996,35 @@ function createNotesFromLylic() {
 player.addListener({
   onAppReady: (app) => {
     if (!app.managed) {
-      player.createFromSongUrl(SONG_URL, {
-        video: {
-          // 音楽地図訂正履歴: https://songle.jp/songs/2427948/history
-          beatId: 4267297,
-          chordId: 2405019,
-          repetitiveSegmentId: 2405019,
-          // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FucgN%2F20230110005414
-          lyricId: 56092,
-          // lyricDiffId: 10701
-          lyricDiffId: 9636
-        },
-      })
+      pane.hidden = !pane.hidden
+      // // ネオンライトの海を往く / Ponchi♪ feat. 初音ミク
+      // player.createFromSongUrl("https://piapro.jp/t/fyxI/20230203003935", {
+      //   video: {
+      //     // 音楽地図訂正履歴: https://songle.jp/songs/2427951/history
+      //     beatId: 4267373,
+      //     chordId: 2405138,
+      //     repetitiveSegmentId: 2475664,
+      //     // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FfyxI%2F20230203003935
+      //     lyricId: 56096,
+      //     lyricDiffId: 9639
+      //   },
+      // });
+      // // player.createFromSongUrl(SONG_URL, {
+      // //   video: {
+      // //     // 音楽地図訂正履歴: https://songle.jp/songs/2427948/history
+      // //     beatId: 4267297,
+      // //     chordId: 2405019,
+      // //     repetitiveSegmentId: 2405019,
+      // //     // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FucgN%2F20230110005414
+      // //     lyricId: 56092,
+      // //     // lyricDiffId: 10701
+      // //     lyricDiffId: 9636
+      // //   },
+      // // })
     }
   },
   onTimerReady() {
+    pane.hidden = !pane.hidden
     bpm = Math.round(60000/player.getBeats()[5].duration)
     console.log(bpm)
     // ↓サビ飛ばし
