@@ -498,9 +498,12 @@ const sketch = (p: p5) => {
 
         const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
-        for (let i = 0; i <= 8; i++) {
-          p.line(posX(i), -p.height*2, posX(i), p.height/2)
-        }
+        p.push()
+          // p.strokeWeight(5)
+          for (let i = 0; i <= 8; i++) {
+            p.line(posX(i), -p.height*2, posX(i), p.height/2)
+          }
+        p.pop()
 
         p.line(-p.width/2, -20, p.width/2, -20)
         p.line(-p.width/2, 20, p.width/2, 20)
@@ -568,9 +571,12 @@ const sketch = (p: p5) => {
 
         const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
-        for (let i = 0; i <= 8; i++) {
-          p.line(posX(i), -p.height*2, posX(i), p.height/2)
-        }
+        p.push()
+          // p.strokeWeight(5)
+          for (let i = 0; i <= 8; i++) {
+            p.line(posX(i), -p.height*2, posX(i), p.height/2)
+          }
+        p.pop()
 
         p.line(-p.width/2, -20, p.width/2, -20)
         p.line(-p.width/2, 20, p.width/2, 20)
@@ -719,9 +725,12 @@ const sketch = (p: p5) => {
 
         const posX = (i: number) => p.map(i, 0, 8, -p.width*0.9/2, p.width*0.9/2)
 
-        for (let i = 0; i <= 8; i++) {
-          p.line(posX(i), -p.height*2, posX(i), p.height/2)
-        }
+        p.push()
+          p.strokeWeight(5)
+          for (let i = 0; i <= 8; i++) {
+            p.line(posX(i), -p.height*2, posX(i), p.height/2)
+          }
+        p.pop()
 
         p.line(-p.width/2, -20, p.width/2, -20)
         // p.line(-p.width/2, 0, p.width/2, 0)
